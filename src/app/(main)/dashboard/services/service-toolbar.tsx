@@ -9,7 +9,15 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -60,9 +68,10 @@ function AddCategoryDialog() {
           <Plus /> เพิ่มกลุ่มบริการ
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>เพิ่มกลุ่มบริการ</DialogTitle>
+          <DialogDescription>ตั้งชื่อกลุ่มบริการ เช่น &quot;บริการเล็บ&quot; หรือ &quot;บริการผม&quot;</DialogDescription>
         </DialogHeader>
         <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FieldGroup className="gap-4">
@@ -114,16 +123,25 @@ function AddServiceDialog({ categories }: { categories: Category[] }) {
     setOpen(false);
   }
 
+  function handleOpenChange(next: boolean) {
+    if (next && categories.length === 0) {
+      toast.error("กรุณาเพิ่มกลุ่มบริการก่อน", { description: "ต้องมีอย่างน้อย 1 กลุ่มบริการก่อนเพิ่มบริการได้" });
+      return;
+    }
+    setOpen(next);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button disabled={categories.length === 0}>
+        <Button>
           <Plus /> เพิ่มบริการ
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>เพิ่มบริการ</DialogTitle>
+          <DialogDescription>กรอกรายละเอียดบริการที่ร้านเปิดให้จอง</DialogDescription>
         </DialogHeader>
         <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FieldGroup className="gap-4">

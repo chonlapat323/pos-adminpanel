@@ -1,4 +1,7 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users } from "lucide-react";
+
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requireApiFetch } from "@/lib/api";
 
@@ -25,7 +28,15 @@ export default async function MembersPage() {
           <CardTitle>สมาชิกทั้งหมด ({members.length})</CardTitle>
         </CardHeader>
         {members.length === 0 ? (
-          <CardDescription className="px-6 pb-6">ยังไม่มีสมาชิก</CardDescription>
+          <Empty className="border-none">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Users />
+              </EmptyMedia>
+              <EmptyTitle>ยังไม่มีสมาชิก</EmptyTitle>
+              <EmptyDescription>สมาชิกจะถูกเพิ่มเมื่อเปิดบิลครั้งแรกที่ POS หน้าร้าน</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <Table>
             <TableHeader>

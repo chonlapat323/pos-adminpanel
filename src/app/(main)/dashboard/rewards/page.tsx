@@ -1,5 +1,8 @@
+import { Gift } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requireApiFetch } from "@/lib/api";
 
@@ -26,7 +29,15 @@ export default async function RewardsPage() {
           <CardTitle>รางวัลทั้งหมด ({rewards.length})</CardTitle>
         </CardHeader>
         {rewards.length === 0 ? (
-          <CardDescription className="px-6 pb-6">ยังไม่มีรางวัล</CardDescription>
+          <Empty className="border-none">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Gift />
+              </EmptyMedia>
+              <EmptyTitle>ยังไม่มีรางวัล</EmptyTitle>
+              <EmptyDescription>ตั้งรางวัลที่สมาชิกแลกด้วย point ได้ เช่น &quot;สระผมฟรี = 20 point&quot;</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <Table>
             <TableHeader>

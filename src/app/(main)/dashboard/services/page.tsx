@@ -1,5 +1,8 @@
+import { Scissors } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requireApiFetch } from "@/lib/api";
 
@@ -46,7 +49,19 @@ export default async function ServicesPage() {
           <CardDescription>{categories.length} กลุ่มบริการ</CardDescription>
         </CardHeader>
         {services.length === 0 ? (
-          <CardDescription className="px-6 pb-6">ยังไม่มีบริการ — เพิ่มบริการแรกได้เลย</CardDescription>
+          <Empty className="border-none">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Scissors />
+              </EmptyMedia>
+              <EmptyTitle>{categories.length === 0 ? "ยังไม่มีกลุ่มบริการ" : "ยังไม่มีบริการ"}</EmptyTitle>
+              <EmptyDescription>
+                {categories.length === 0
+                  ? "เริ่มจากกดปุ่ม “เพิ่มกลุ่มบริการ” ด้านบนก่อน แล้วค่อยเพิ่มบริการย่อยในกลุ่มนั้น"
+                  : "กดปุ่ม “เพิ่มบริการ” ด้านบนเพื่อเพิ่มบริการแรกของร้าน"}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <Table>
             <TableHeader>
