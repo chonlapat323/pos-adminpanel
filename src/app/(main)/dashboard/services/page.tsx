@@ -3,6 +3,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requireApiFetch } from "@/lib/api";
 
+import { ServiceToolbar } from "./service-toolbar";
+
 interface ServiceCategory {
   id: string;
   name: string;
@@ -30,9 +32,12 @@ export default async function ServicesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-2xl font-semibold">บริการ</h1>
-        <p className="text-muted-foreground">จัดการกลุ่มบริการและบริการย่อยของร้าน</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">บริการ</h1>
+          <p className="text-muted-foreground">จัดการกลุ่มบริการและบริการย่อยของร้าน</p>
+        </div>
+        <ServiceToolbar categories={categories} />
       </div>
 
       <Card>
