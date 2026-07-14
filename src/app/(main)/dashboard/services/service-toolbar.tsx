@@ -71,7 +71,12 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
 
   return (
     <Modal isOpen={open} onOpenChange={handleOpenChange}>
-      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0" })}>
+      <Modal.Trigger
+        className={buttonVariants({
+          variant: "primary",
+          className: "!inline-flex shrink-0 items-center justify-center",
+        })}
+      >
         <span className="inline-flex items-center gap-2 whitespace-nowrap">
           <Plus className="size-4" />
           เพิ่มบริการ

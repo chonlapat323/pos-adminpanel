@@ -34,7 +34,12 @@ export function CategoryToolbar() {
 
   return (
     <Modal isOpen={open} onOpenChange={setOpen}>
-      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0" })}>
+      <Modal.Trigger
+        className={buttonVariants({
+          variant: "primary",
+          className: "!inline-flex shrink-0 items-center justify-center",
+        })}
+      >
         <span className="inline-flex items-center gap-2 whitespace-nowrap">
           <Plus className="size-4" />
           เพิ่มกลุ่มบริการ
