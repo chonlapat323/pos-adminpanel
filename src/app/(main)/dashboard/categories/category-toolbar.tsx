@@ -34,7 +34,7 @@ export function CategoryToolbar() {
 
   return (
     <Modal isOpen={open} onOpenChange={setOpen}>
-      <Modal.Trigger className={buttonVariants({ variant: "primary" })}>
+      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0 whitespace-nowrap" })}>
         <Plus className="size-4" /> เพิ่มกลุ่มบริการ
       </Modal.Trigger>
       <Modal.Backdrop>

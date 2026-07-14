@@ -71,7 +71,7 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
 
   return (
     <Modal isOpen={open} onOpenChange={handleOpenChange}>
-      <Modal.Trigger className={buttonVariants({ variant: "primary" })}>
+      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0 whitespace-nowrap" })}>
         <Plus className="size-4" /> เพิ่มบริการ
       </Modal.Trigger>
       <Modal.Backdrop>
