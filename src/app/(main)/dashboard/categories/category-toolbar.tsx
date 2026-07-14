@@ -74,6 +74,7 @@ export function CategoryToolbar() {
                 />
               </Modal.Body>
               <Modal.Footer>
+                <Modal.CloseTrigger className={buttonVariants({ variant: "secondary" })}>ยกเลิก</Modal.CloseTrigger>
                 <Button type="submit" isDisabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? "กำลังบันทึก..." : "บันทึก"}
                 </Button>
