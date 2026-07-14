@@ -1,4 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getApiHealth } from "@/lib/api";
 
 const STAT_CARDS = [
   { label: "รายได้วันนี้", value: "-" },
@@ -7,7 +8,9 @@ const STAT_CARDS = [
   { label: "Point คงเหลือในระบบ", value: "-" },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const health = await getApiHealth();
+
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -26,8 +29,12 @@ export default function DashboardPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>รอเชื่อมต่อ API</CardTitle>
-          <CardDescription>ตัวเลขด้านบนจะดึงจาก pos-backend เมื่อเชื่อมต่อ API เรียบร้อย</CardDescription>
+          <CardTitle>{health ? "เชื่อมต่อ pos-backend สำเร็จ" : "ยังเชื่อมต่อ pos-backend ไม่ได้"}</CardTitle>
+          <CardDescription>
+            {health
+              ? `${health.service} ตอบกลับปกติ — ตัวเลขด้านบนจะดึงข้อมูลจริงเมื่อเพิ่ม endpoint แล้ว`
+              : "ตรวจสอบว่า pos-backend รันอยู่ที่พอร์ต 3010"}
+          </CardDescription>
         </CardHeader>
       </Card>
     </div>
