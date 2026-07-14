@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input, ListBox, Select } from "@heroui/react";
+import { ChevronDown } from "lucide-react";
 
 interface Category {
   id: string;
@@ -20,9 +20,9 @@ export function ServicesFilter({ categories }: { categories: Category[] }) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
 
-  function updateParam(key: string, value: string) {
+  function updateParam(key: string, value: React.Key | null) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value && value !== ALL) params.set(key, value);
+    if (value && value !== ALL) params.set(key, String(value));
     else params.delete(key);
     params.delete("page");
     router.push(`${pathname}?${params.toString()}`);
@@ -40,29 +40,40 @@ export function ServicesFilter({ categories }: { categories: Category[] }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Input placeholder="ค้นหาชื่อบริการ" value={search} onChange={(e) => setSearch(e.target.value)} className="w-48" />
-      <Select value={searchParams.get("categoryId") ?? ALL} onValueChange={(value) => updateParam("categoryId", value)}>
-        <SelectTrigger className="w-44">
-          <SelectValue placeholder="ทุกกลุ่มบริการ" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>ทุกกลุ่มบริการ</SelectItem>
-          {categories.map((category) => (
-            <SelectItem key={category.id} value={category.id}>
-              {category.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
+
+      <Select
+        selectedKey={searchParams.get("categoryId") ?? ALL}
+        onSelectionChange={(key) => updateParam("categoryId", key)}
+      >
+        <Select.Trigger className="w-44">
+          <Select.Value />
+          <ChevronDown className="size-4" />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            <ListBox.Item id={ALL}>ทุกกลุ่มบริการ</ListBox.Item>
+            {categories.map((category) => (
+              <ListBox.Item key={category.id} id={category.id}>
+                {category.name}
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
       </Select>
-      <Select value={searchParams.get("status") ?? ALL} onValueChange={(value) => updateParam("status", value)}>
-        <SelectTrigger className="w-36">
-          <SelectValue placeholder="ทุกสถานะ" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>ทุกสถานะ</SelectItem>
-          <SelectItem value="ACTIVE">เปิดใช้งาน</SelectItem>
-          <SelectItem value="INACTIVE">ปิด</SelectItem>
-          <SelectItem value="PROMOTION">โปรโมชัน</SelectItem>
-        </SelectContent>
+
+      <Select selectedKey={searchParams.get("status") ?? ALL} onSelectionChange={(key) => updateParam("status", key)}>
+        <Select.Trigger className="w-36">
+          <Select.Value />
+          <ChevronDown className="size-4" />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            <ListBox.Item id={ALL}>ทุกสถานะ</ListBox.Item>
+            <ListBox.Item id="ACTIVE">เปิดใช้งาน</ListBox.Item>
+            <ListBox.Item id="INACTIVE">ปิด</ListBox.Item>
+            <ListBox.Item id="PROMOTION">โปรโมชัน</ListBox.Item>
+          </ListBox>
+        </Select.Popover>
       </Select>
     </div>
   );

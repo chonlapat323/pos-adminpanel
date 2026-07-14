@@ -8,7 +8,7 @@ export function proxy(req: NextRequest) {
   const isDashboardRoute = req.nextUrl.pathname.startsWith("/dashboard");
 
   if (!token && isDashboardRoute) {
-    return NextResponse.redirect(new URL("/auth/v1/login", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
   if (token && isAuthRoute) {

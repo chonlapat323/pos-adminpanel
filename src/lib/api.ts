@@ -62,7 +62,7 @@ export async function requireApiFetch<T>(path: string, options: RequestInit = {}
     return await apiFetch<T>(path, options);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      redirect("/auth/v1/login");
+      redirect("/auth/login");
     }
     throw error;
   }

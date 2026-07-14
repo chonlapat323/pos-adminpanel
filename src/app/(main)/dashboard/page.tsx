@@ -1,4 +1,5 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@heroui/react";
+
 import { requireApiFetch } from "@/lib/api";
 
 interface ReportSummary {
@@ -28,15 +29,15 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">ภาพรวมร้าน</h1>
-        <p className="text-muted-foreground">สรุปรายได้ บิล และสมาชิกของร้าน</p>
+        <p className="text-muted">สรุปรายได้ บิล และสมาชิกของร้าน</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
           <Card key={stat.label}>
-            <CardHeader>
-              <CardDescription>{stat.label}</CardDescription>
-              <CardTitle className="text-2xl">{stat.value}</CardTitle>
-            </CardHeader>
+            <Card.Header>
+              <Card.Description>{stat.label}</Card.Description>
+              <Card.Title className="text-2xl">{stat.value}</Card.Title>
+            </Card.Header>
           </Card>
         ))}
       </div>

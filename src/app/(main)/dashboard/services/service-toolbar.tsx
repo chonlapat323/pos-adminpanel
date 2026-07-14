@@ -2,26 +2,23 @@
 
 import { useState } from "react";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  Button,
+  buttonVariants,
+  ErrorMessage,
+  Input,
+  Label,
+  ListBox,
+  Modal,
+  Select,
+  TextArea,
+  TextField,
+  toast,
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown, Plus } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { createService } from "./actions";
 
@@ -56,7 +53,7 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
   async function onSubmit(data: z.output<typeof serviceSchema>) {
     const result = await createService(data);
     if (!result.success) {
-      toast.error(result.error);
+      toast.danger(result.error);
       return;
     }
     toast.success("เพิ่มบริการแล้ว");
@@ -66,134 +63,164 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
 
   function handleOpenChange(next: boolean) {
     if (next && categories.length === 0) {
-      toast.error("กรุณาเพิ่มกลุ่มบริการก่อน", { description: "ไปที่เมนู “กลุ่มบริการ” เพื่อเพิ่มก่อน" });
+      toast.danger("กรุณาเพิ่มกลุ่มบริการก่อน", { description: "ไปที่เมนู “กลุ่มบริการ” เพื่อเพิ่มก่อน" });
       return;
     }
     setOpen(next);
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus /> เพิ่มบริการ
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>เพิ่มบริการ</DialogTitle>
-          <DialogDescription>กรอกรายละเอียดบริการที่ร้านเปิดให้จอง</DialogDescription>
-        </DialogHeader>
-        <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <FieldGroup className="gap-4">
-            <Controller
-              control={form.control}
-              name="categoryId"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel>กลุ่มบริการ</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="เลือกกลุ่มบริการ" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="name"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="service-name">ชื่อบริการ</FieldLabel>
-                  <Input {...field} id="service-name" placeholder="เช่น ทาสีเล็บ" aria-invalid={fieldState.invalid} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <Field className="gap-1.5">
-                  <FieldLabel htmlFor="service-description">คำอธิบาย (ไม่บังคับ)</FieldLabel>
-                  <Textarea {...field} id="service-description" placeholder="รายละเอียดบริการ" />
-                </Field>
-              )}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                control={form.control}
-                name="price"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="service-price">ราคา (บาท)</FieldLabel>
-                    <Input
-                      {...field}
-                      value={field.value as number}
-                      id="service-price"
-                      type="number"
-                      min={0}
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="durationMinutes"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="service-duration">ระยะเวลา (นาที)</FieldLabel>
-                    <Input
-                      {...field}
-                      value={field.value as number}
-                      id="service-duration"
-                      type="number"
-                      min={1}
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-            </div>
-            <Controller
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <Field className="gap-1.5">
-                  <FieldLabel>สถานะ</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ACTIVE">เปิดใช้งาน</SelectItem>
-                      <SelectItem value="INACTIVE">ปิด</SelectItem>
-                      <SelectItem value="PROMOTION">โปรโมชัน</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              )}
-            />
-          </FieldGroup>
-          <DialogFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "กำลังบันทึก..." : "บันทึก"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <Modal isOpen={open} onOpenChange={handleOpenChange}>
+      <Modal.Trigger className={buttonVariants({ variant: "primary" })}>
+        <Plus className="size-4" /> เพิ่มบริการ
+      </Modal.Trigger>
+      <Modal.Backdrop>
+        <Modal.Container size="lg">
+          <Modal.Dialog>
+            <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <Modal.Header>
+                <Modal.Heading>เพิ่มบริการ</Modal.Heading>
+                <p className="text-muted text-sm">กรอกรายละเอียดบริการที่ร้านเปิดให้จอง</p>
+              </Modal.Header>
+              <Modal.Body className="flex flex-col gap-4">
+                <Controller
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col gap-1.5">
+                      <Label>กลุ่มบริการ</Label>
+                      <Select
+                        selectedKey={field.value || null}
+                        onSelectionChange={(key) => field.onChange(String(key ?? ""))}
+                        isInvalid={fieldState.invalid}
+                        fullWidth
+                      >
+                        <Select.Trigger>
+                          <Select.Value>{(node) => node.selectedText || "เลือกกลุ่มบริการ"}</Select.Value>
+                          <ChevronDown className="size-4" />
+                        </Select.Trigger>
+                        <Select.Popover>
+                          <ListBox>
+                            {categories.map((category) => (
+                              <ListBox.Item key={category.id} id={category.id}>
+                                {category.name}
+                              </ListBox.Item>
+                            ))}
+                          </ListBox>
+                        </Select.Popover>
+                      </Select>
+                      {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
+                    </div>
+                  )}
+                />
+                <Controller
+                  control={form.control}
+                  name="name"
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      isInvalid={fieldState.invalid}
+                      fullWidth
+                    >
+                      <Label>ชื่อบริการ</Label>
+                      <Input placeholder="เช่น ทาสีเล็บ" />
+                      {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
+                    </TextField>
+                  )}
+                />
+                <Controller
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <TextField
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      fullWidth
+                    >
+                      <Label>คำอธิบาย (ไม่บังคับ)</Label>
+                      <TextArea placeholder="รายละเอียดบริการ" />
+                    </TextField>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Controller
+                    control={form.control}
+                    name="price"
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value as unknown as string}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        isInvalid={fieldState.invalid}
+                        fullWidth
+                      >
+                        <Label>ราคา (บาท)</Label>
+                        <Input type="number" min={0} />
+                        {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
+                      </TextField>
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name="durationMinutes"
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value as unknown as string}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        isInvalid={fieldState.invalid}
+                        fullWidth
+                      >
+                        <Label>ระยะเวลา (นาที)</Label>
+                        <Input type="number" min={1} />
+                        {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
+                      </TextField>
+                    )}
+                  />
+                </div>
+                <Controller
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5">
+                      <Label>สถานะ</Label>
+                      <Select
+                        selectedKey={field.value}
+                        onSelectionChange={(key) => field.onChange(String(key))}
+                        fullWidth
+                      >
+                        <Select.Trigger>
+                          <Select.Value />
+                          <ChevronDown className="size-4" />
+                        </Select.Trigger>
+                        <Select.Popover>
+                          <ListBox>
+                            <ListBox.Item id="ACTIVE">เปิดใช้งาน</ListBox.Item>
+                            <ListBox.Item id="INACTIVE">ปิด</ListBox.Item>
+                            <ListBox.Item id="PROMOTION">โปรโมชัน</ListBox.Item>
+                          </ListBox>
+                        </Select.Popover>
+                      </Select>
+                    </div>
+                  )}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button type="submit" isDisabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "กำลังบันทึก..." : "บันทึก"}
+                </Button>
+              </Modal.Footer>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

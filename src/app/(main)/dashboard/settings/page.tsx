@@ -1,4 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@heroui/react";
+
 import { requireApiFetch } from "@/lib/api";
 
 interface Shop {
@@ -29,22 +30,22 @@ export default async function SettingsPage() {
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">ตั้งค่าร้าน</h1>
-        <p className="text-muted-foreground">ชื่อร้าน โลโก้ ที่อยู่ เวลาเปิด-ปิด และอัตราแลก point</p>
+        <p className="text-muted">ชื่อร้าน โลโก้ ที่อยู่ เวลาเปิด-ปิด และอัตราแลก point</p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>{shop.name}</CardTitle>
-          <CardDescription>slug: {shop.slug}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
+        <Card.Header>
+          <Card.Title>{shop.name}</Card.Title>
+          <Card.Description>slug: {shop.slug}</Card.Description>
+        </Card.Header>
+        <Card.Content className="grid gap-3 sm:grid-cols-2">
           {FIELD_LABELS.map(({ key, label }) => (
             <div key={key} className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">{label}</span>
-              <span className="text-sm font-medium">{shop[key] ?? "-"}</span>
+              <span className="text-muted text-xs">{label}</span>
+              <span className="font-medium text-sm">{shop[key] ?? "-"}</span>
             </div>
           ))}
-        </CardContent>
+        </Card.Content>
       </Card>
     </div>
   );

@@ -1,6 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, Chip, Table } from "@heroui/react";
+
 import { requireApiFetch } from "@/lib/api";
 
 interface Staff {
@@ -19,38 +18,42 @@ export default async function StaffPage() {
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">พนักงาน</h1>
-        <p className="text-muted-foreground">จัดการบัญชีพนักงานที่ใช้งาน POS หน้าร้าน</p>
+        <p className="text-muted">จัดการบัญชีพนักงานที่ใช้งาน POS หน้าร้าน</p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>พนักงานทั้งหมด ({staff.length})</CardTitle>
-        </CardHeader>
+        <Card.Header>
+          <Card.Title>พนักงานทั้งหมด ({staff.length})</Card.Title>
+        </Card.Header>
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ชื่อ</TableHead>
-              <TableHead>อีเมล</TableHead>
-              <TableHead>บทบาท</TableHead>
-              <TableHead>สถานะ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {staff.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>{member.name}</TableCell>
-                <TableCell>{member.email}</TableCell>
-                <TableCell>
-                  <Badge variant={member.role === "OWNER" ? "default" : "outline"}>{member.role}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={member.isActive ? "default" : "secondary"}>
-                    {member.isActive ? "ใช้งานอยู่" : "ปิดใช้งาน"}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="พนักงานทั้งหมด">
+              <Table.Header>
+                <Table.Column isRowHeader>ชื่อ</Table.Column>
+                <Table.Column>อีเมล</Table.Column>
+                <Table.Column>บทบาท</Table.Column>
+                <Table.Column>สถานะ</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {staff.map((member) => (
+                  <Table.Row key={member.id}>
+                    <Table.Cell>{member.name}</Table.Cell>
+                    <Table.Cell>{member.email}</Table.Cell>
+                    <Table.Cell>
+                      <Chip color={member.role === "OWNER" ? "accent" : "default"} variant="soft">
+                        <Chip.Label>{member.role}</Chip.Label>
+                      </Chip>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Chip color={member.isActive ? "success" : "default"} variant="soft">
+                        <Chip.Label>{member.isActive ? "ใช้งานอยู่" : "ปิดใช้งาน"}</Chip.Label>
+                      </Chip>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </Card>
     </div>

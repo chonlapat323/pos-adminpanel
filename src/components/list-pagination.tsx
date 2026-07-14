@@ -1,10 +1,8 @@
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+"use client";
+
+import { useRouter } from "next/navigation";
+
+import { Pagination } from "@heroui/react";
 
 interface ListPaginationProps {
   page: number;
@@ -24,6 +22,7 @@ function buildHref(basePath: string, searchParams: Record<string, string | undef
 }
 
 export function ListPagination({ page, pageSize, total, basePath, searchParams }: ListPaginationProps) {
+  const router = useRouter();
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   if (totalPages <= 1) return null;
 
@@ -32,27 +31,29 @@ export function ListPagination({ page, pageSize, total, basePath, searchParams }
 
   return (
     <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href={buildHref(basePath, searchParams, Math.max(1, page - 1))}
-            aria-disabled={isFirst}
-            className={isFirst ? "pointer-events-none opacity-50" : undefined}
-          />
-        </PaginationItem>
-        <PaginationItem>
-          <span className="px-3 text-sm text-muted-foreground">
+      <Pagination.Content>
+        <Pagination.Item>
+          <Pagination.Previous
+            isDisabled={isFirst}
+            onPress={() => router.push(buildHref(basePath, searchParams, Math.max(1, page - 1)))}
+          >
+            ก่อนหน้า
+          </Pagination.Previous>
+        </Pagination.Item>
+        <Pagination.Item>
+          <span className="px-3 text-muted text-sm">
             หน้า {page} จาก {totalPages} ({total} รายการ)
           </span>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext
-            href={buildHref(basePath, searchParams, Math.min(totalPages, page + 1))}
-            aria-disabled={isLast}
-            className={isLast ? "pointer-events-none opacity-50" : undefined}
-          />
-        </PaginationItem>
-      </PaginationContent>
+        </Pagination.Item>
+        <Pagination.Item>
+          <Pagination.Next
+            isDisabled={isLast}
+            onPress={() => router.push(buildHref(basePath, searchParams, Math.min(totalPages, page + 1)))}
+          >
+            ถัดไป
+          </Pagination.Next>
+        </Pagination.Item>
+      </Pagination.Content>
     </Pagination>
   );
 }

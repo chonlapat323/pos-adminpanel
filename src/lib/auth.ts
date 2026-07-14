@@ -50,7 +50,7 @@ export async function login(
 export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE);
-  redirect("/auth/v1/login");
+  redirect("/auth/login");
 }
 
 export async function getToken(): Promise<string | null> {

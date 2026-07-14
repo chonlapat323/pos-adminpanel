@@ -1,5 +1,5 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, Table } from "@heroui/react";
+
 import { requireApiFetch } from "@/lib/api";
 
 interface ReportSummary {
@@ -40,82 +40,86 @@ export default async function ReportsPage() {
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-semibold">รายงาน</h1>
-        <p className="text-muted-foreground">รายได้ บริการขายดี และยอดขายต่อพนักงาน</p>
+        <p className="text-muted">รายได้ บริการขายดี และยอดขายต่อพนักงาน</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
-          <CardHeader>
-            <CardDescription>รายได้วันนี้</CardDescription>
-            <CardTitle className="text-2xl">{formatBaht(summary.revenueToday)}</CardTitle>
-          </CardHeader>
+          <Card.Header>
+            <Card.Description>รายได้วันนี้</Card.Description>
+            <Card.Title className="text-2xl">{formatBaht(summary.revenueToday)}</Card.Title>
+          </Card.Header>
         </Card>
         <Card>
-          <CardHeader>
-            <CardDescription>รายได้ 7 วันล่าสุด</CardDescription>
-            <CardTitle className="text-2xl">{formatBaht(summary.revenueWeek)}</CardTitle>
-          </CardHeader>
+          <Card.Header>
+            <Card.Description>รายได้ 7 วันล่าสุด</Card.Description>
+            <Card.Title className="text-2xl">{formatBaht(summary.revenueWeek)}</Card.Title>
+          </Card.Header>
         </Card>
         <Card>
-          <CardHeader>
-            <CardDescription>รายได้เดือนนี้</CardDescription>
-            <CardTitle className="text-2xl">{formatBaht(summary.revenueMonth)}</CardTitle>
-          </CardHeader>
+          <Card.Header>
+            <Card.Description>รายได้เดือนนี้</Card.Description>
+            <Card.Title className="text-2xl">{formatBaht(summary.revenueMonth)}</Card.Title>
+          </Card.Header>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>บริการขายดี</CardTitle>
-        </CardHeader>
+        <Card.Header>
+          <Card.Title>บริการขายดี</Card.Title>
+        </Card.Header>
         {topServices.length === 0 ? (
-          <CardDescription className="px-6 pb-6">ยังไม่มีข้อมูลการขาย</CardDescription>
+          <Card.Description className="px-6 pb-6">ยังไม่มีข้อมูลการขาย</Card.Description>
         ) : (
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>บริการ</TableHead>
-                <TableHead className="text-right">จำนวนที่ขาย</TableHead>
-                <TableHead className="text-right">รายได้รวม</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topServices.map((service) => (
-                <TableRow key={service.serviceId}>
-                  <TableCell>{service.name}</TableCell>
-                  <TableCell className="text-right">{service.totalQuantity}</TableCell>
-                  <TableCell className="text-right">{formatBaht(service.totalRevenue)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <Table.ScrollContainer>
+              <Table.Content aria-label="บริการขายดี">
+                <Table.Header>
+                  <Table.Column isRowHeader>บริการ</Table.Column>
+                  <Table.Column className="text-right">จำนวนที่ขาย</Table.Column>
+                  <Table.Column className="text-right">รายได้รวม</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {topServices.map((service) => (
+                    <Table.Row key={service.serviceId}>
+                      <Table.Cell>{service.name}</Table.Cell>
+                      <Table.Cell className="text-right">{service.totalQuantity}</Table.Cell>
+                      <Table.Cell className="text-right">{formatBaht(service.totalRevenue)}</Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
           </Table>
         )}
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>ยอดขายต่อพนักงาน</CardTitle>
-        </CardHeader>
+        <Card.Header>
+          <Card.Title>ยอดขายต่อพนักงาน</Card.Title>
+        </Card.Header>
         {staffSales.length === 0 ? (
-          <CardDescription className="px-6 pb-6">ยังไม่มีข้อมูลการขาย</CardDescription>
+          <Card.Description className="px-6 pb-6">ยังไม่มีข้อมูลการขาย</Card.Description>
         ) : (
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>พนักงาน</TableHead>
-                <TableHead className="text-right">จำนวนบิล</TableHead>
-                <TableHead className="text-right">ยอดขายรวม</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {staffSales.map((staff) => (
-                <TableRow key={staff.staffId}>
-                  <TableCell>{staff.name}</TableCell>
-                  <TableCell className="text-right">{staff.billCount}</TableCell>
-                  <TableCell className="text-right">{formatBaht(staff.totalSales)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <Table.ScrollContainer>
+              <Table.Content aria-label="ยอดขายต่อพนักงาน">
+                <Table.Header>
+                  <Table.Column isRowHeader>พนักงาน</Table.Column>
+                  <Table.Column className="text-right">จำนวนบิล</Table.Column>
+                  <Table.Column className="text-right">ยอดขายรวม</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {staffSales.map((staff) => (
+                    <Table.Row key={staff.staffId}>
+                      <Table.Cell>{staff.name}</Table.Cell>
+                      <Table.Cell className="text-right">{staff.billCount}</Table.Cell>
+                      <Table.Cell className="text-right">{formatBaht(staff.totalSales)}</Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
           </Table>
         )}
       </Card>

@@ -1,10 +1,7 @@
+import { Card, Chip, EmptyState, Table } from "@heroui/react";
 import { Scissors } from "lucide-react";
 
 import { ListPagination } from "@/components/list-pagination";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { type PaginatedResult, requireApiFetch } from "@/lib/api";
 
 import { ServiceToolbar } from "./service-toolbar";
@@ -64,50 +61,54 @@ export default async function ServicesPage({ searchParams }: PageProps) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">บริการ</h1>
-          <p className="text-muted-foreground">จัดการบริการย่อยของร้าน</p>
+          <p className="text-muted">จัดการบริการย่อยของร้าน</p>
         </div>
         <ServiceToolbar categories={categories} />
       </div>
 
       <Card>
-        <CardHeader className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle>บริการทั้งหมด ({result.total})</CardTitle>
+        <Card.Header className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Card.Title>บริการทั้งหมด ({result.total})</Card.Title>
           <ServicesFilter categories={categories} />
-        </CardHeader>
+        </Card.Header>
         {result.data.length === 0 ? (
-          <Empty className="border-none">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Scissors />
-              </EmptyMedia>
-              <EmptyTitle>{hasFilter ? "ไม่พบบริการที่ค้นหา" : "ยังไม่มีบริการ"}</EmptyTitle>
-              <EmptyDescription>{emptyDescription}</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <EmptyState className="border-none">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-default">
+                <Scissors className="size-4" />
+              </div>
+              <p className="font-medium text-sm">{hasFilter ? "ไม่พบบริการที่ค้นหา" : "ยังไม่มีบริการ"}</p>
+              <p className="max-w-sm text-muted text-sm">{emptyDescription}</p>
+            </div>
+          </EmptyState>
         ) : (
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ชื่อบริการ</TableHead>
-                <TableHead>กลุ่ม</TableHead>
-                <TableHead className="text-right">ราคา</TableHead>
-                <TableHead className="text-right">ระยะเวลา</TableHead>
-                <TableHead>สถานะ</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {result.data.map((service) => (
-                <TableRow key={service.id}>
-                  <TableCell>{service.name}</TableCell>
-                  <TableCell>{service.category.name}</TableCell>
-                  <TableCell className="text-right">{formatBaht(service.price)}</TableCell>
-                  <TableCell className="text-right">{service.durationMinutes} นาที</TableCell>
-                  <TableCell>
-                    <Badge variant={service.status === "ACTIVE" ? "default" : "secondary"}>{service.status}</Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <Table.ScrollContainer>
+              <Table.Content aria-label="บริการทั้งหมด">
+                <Table.Header>
+                  <Table.Column isRowHeader>ชื่อบริการ</Table.Column>
+                  <Table.Column>กลุ่ม</Table.Column>
+                  <Table.Column className="text-right">ราคา</Table.Column>
+                  <Table.Column className="text-right">ระยะเวลา</Table.Column>
+                  <Table.Column>สถานะ</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {result.data.map((service) => (
+                    <Table.Row key={service.id}>
+                      <Table.Cell>{service.name}</Table.Cell>
+                      <Table.Cell>{service.category.name}</Table.Cell>
+                      <Table.Cell className="text-right">{formatBaht(service.price)}</Table.Cell>
+                      <Table.Cell className="text-right">{service.durationMinutes} นาที</Table.Cell>
+                      <Table.Cell>
+                        <Chip color={service.status === "ACTIVE" ? "success" : "default"} variant="soft">
+                          <Chip.Label>{service.status}</Chip.Label>
+                        </Chip>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
           </Table>
         )}
       </Card>
