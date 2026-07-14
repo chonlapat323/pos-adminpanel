@@ -9,6 +9,13 @@ export interface HealthResponse {
   service: string;
 }
 
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export async function getApiHealth(): Promise<HealthResponse | null> {
   try {
     const res = await fetch(`${API_URL}/health`, { cache: "no-store" });

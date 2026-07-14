@@ -6,6 +6,7 @@ import {
   ReceiptText,
   Scissors,
   Settings,
+  Tag,
   UserCog,
   Users,
 } from "lucide-react";
@@ -71,6 +72,12 @@ export const sidebarItems: NavGroup[] = [
     id: 2,
     label: "จัดการร้าน",
     items: [
+      {
+        id: "categories",
+        title: "กลุ่มบริการ",
+        url: "/dashboard/categories",
+        icon: Tag,
+      },
       {
         id: "services",
         title: "บริการ",

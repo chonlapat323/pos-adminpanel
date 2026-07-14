@@ -23,16 +23,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-import { createService, createServiceCategory } from "./actions";
+import { createService } from "./actions";
 
 interface Category {
   id: string;
   name: string;
 }
-
-const categorySchema = z.object({
-  name: z.string().min(1, "กรอกชื่อกลุ่มบริการ"),
-});
 
 const serviceSchema = z.object({
   categoryId: z.string().min(1, "เลือกกลุ่มบริการ"),
@@ -43,62 +39,7 @@ const serviceSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE", "PROMOTION"]),
 });
 
-function AddCategoryDialog() {
-  const [open, setOpen] = useState(false);
-  const form = useForm<z.infer<typeof categorySchema>>({
-    resolver: zodResolver(categorySchema),
-    defaultValues: { name: "" },
-  });
-
-  async function onSubmit(data: z.infer<typeof categorySchema>) {
-    const result = await createServiceCategory(data);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success("เพิ่มกลุ่มบริการแล้ว");
-    form.reset();
-    setOpen(false);
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus /> เพิ่มกลุ่มบริการ
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>เพิ่มกลุ่มบริการ</DialogTitle>
-          <DialogDescription>ตั้งชื่อกลุ่มบริการ เช่น &quot;บริการเล็บ&quot; หรือ &quot;บริการผม&quot;</DialogDescription>
-        </DialogHeader>
-        <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <FieldGroup className="gap-4">
-            <Controller
-              control={form.control}
-              name="name"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="category-name">ชื่อกลุ่มบริการ</FieldLabel>
-                  <Input {...field} id="category-name" placeholder="เช่น บริการเล็บ" aria-invalid={fieldState.invalid} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-          <DialogFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "กำลังบันทึก..." : "บันทึก"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function AddServiceDialog({ categories }: { categories: Category[] }) {
+export function ServiceToolbar({ categories }: { categories: Category[] }) {
   const [open, setOpen] = useState(false);
   const form = useForm<z.input<typeof serviceSchema>, unknown, z.output<typeof serviceSchema>>({
     resolver: zodResolver(serviceSchema),
@@ -125,7 +66,7 @@ function AddServiceDialog({ categories }: { categories: Category[] }) {
 
   function handleOpenChange(next: boolean) {
     if (next && categories.length === 0) {
-      toast.error("กรุณาเพิ่มกลุ่มบริการก่อน", { description: "ต้องมีอย่างน้อย 1 กลุ่มบริการก่อนเพิ่มบริการได้" });
+      toast.error("กรุณาเพิ่มกลุ่มบริการก่อน", { description: "ไปที่เมนู “กลุ่มบริการ” เพื่อเพิ่มก่อน" });
       return;
     }
     setOpen(next);
@@ -254,14 +195,5 @@ function AddServiceDialog({ categories }: { categories: Category[] }) {
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-export function ServiceToolbar({ categories }: { categories: Category[] }) {
-  return (
-    <div className="flex gap-2">
-      <AddCategoryDialog />
-      <AddServiceDialog categories={categories} />
-    </div>
   );
 }
