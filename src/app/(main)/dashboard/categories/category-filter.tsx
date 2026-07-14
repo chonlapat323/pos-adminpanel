@@ -29,6 +29,12 @@ export function CategoryFilter() {
   }, [search]);
 
   return (
-    <Input placeholder="ค้นหาชื่อกลุ่มบริการ" value={search} onChange={(e) => setSearch(e.target.value)} className="w-56" />
+    <Input
+      aria-label="ค้นหาชื่อกลุ่มบริการ"
+      placeholder="ค้นหาชื่อกลุ่มบริการ"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="w-56"
+    />
   );
 }

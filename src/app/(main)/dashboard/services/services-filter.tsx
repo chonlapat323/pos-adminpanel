@@ -39,9 +39,16 @@ export function ServicesFilter({ categories }: { categories: Category[] }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Input placeholder="ค้นหาชื่อบริการ" value={search} onChange={(e) => setSearch(e.target.value)} className="w-48" />
+      <Input
+        aria-label="ค้นหาชื่อบริการ"
+        placeholder="ค้นหาชื่อบริการ"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-48"
+      />
 
       <Select
+        aria-label="กรองตามกลุ่มบริการ"
         selectedKey={searchParams.get("categoryId") ?? ALL}
         onSelectionChange={(key) => updateParam("categoryId", key)}
       >
@@ -51,9 +58,11 @@ export function ServicesFilter({ categories }: { categories: Category[] }) {
         </Select.Trigger>
         <Select.Popover>
           <ListBox>
-            <ListBox.Item id={ALL}>ทุกกลุ่มบริการ</ListBox.Item>
+            <ListBox.Item id={ALL} textValue="ทุกกลุ่มบริการ">
+              ทุกกลุ่มบริการ
+            </ListBox.Item>
             {categories.map((category) => (
-              <ListBox.Item key={category.id} id={category.id}>
+              <ListBox.Item key={category.id} id={category.id} textValue={category.name}>
                 {category.name}
               </ListBox.Item>
             ))}
@@ -61,17 +70,29 @@ export function ServicesFilter({ categories }: { categories: Category[] }) {
         </Select.Popover>
       </Select>
 
-      <Select selectedKey={searchParams.get("status") ?? ALL} onSelectionChange={(key) => updateParam("status", key)}>
+      <Select
+        aria-label="กรองตามสถานะ"
+        selectedKey={searchParams.get("status") ?? ALL}
+        onSelectionChange={(key) => updateParam("status", key)}
+      >
         <Select.Trigger className="w-36">
           <Select.Value />
           <ChevronDown className="size-4" />
         </Select.Trigger>
         <Select.Popover>
           <ListBox>
-            <ListBox.Item id={ALL}>ทุกสถานะ</ListBox.Item>
-            <ListBox.Item id="ACTIVE">เปิดใช้งาน</ListBox.Item>
-            <ListBox.Item id="INACTIVE">ปิด</ListBox.Item>
-            <ListBox.Item id="PROMOTION">โปรโมชัน</ListBox.Item>
+            <ListBox.Item id={ALL} textValue="ทุกสถานะ">
+              ทุกสถานะ
+            </ListBox.Item>
+            <ListBox.Item id="ACTIVE" textValue="เปิดใช้งาน">
+              เปิดใช้งาน
+            </ListBox.Item>
+            <ListBox.Item id="INACTIVE" textValue="ปิด">
+              ปิด
+            </ListBox.Item>
+            <ListBox.Item id="PROMOTION" textValue="โปรโมชัน">
+              โปรโมชัน
+            </ListBox.Item>
           </ListBox>
         </Select.Popover>
       </Select>

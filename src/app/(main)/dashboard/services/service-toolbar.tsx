@@ -71,8 +71,11 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
 
   return (
     <Modal isOpen={open} onOpenChange={handleOpenChange}>
-      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0 whitespace-nowrap" })}>
-        <Plus className="size-4" /> เพิ่มบริการ
+      <Modal.Trigger className={buttonVariants({ variant: "primary", className: "shrink-0" })}>
+        <span className="inline-flex items-center gap-2 whitespace-nowrap">
+          <Plus className="size-4" />
+          เพิ่มบริการ
+        </span>
       </Modal.Trigger>
       <Modal.Backdrop>
         <Modal.Container size="lg">
@@ -102,7 +105,7 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
                         <Select.Popover>
                           <ListBox>
                             {categories.map((category) => (
-                              <ListBox.Item key={category.id} id={category.id}>
+                              <ListBox.Item key={category.id} id={category.id} textValue={category.name}>
                                 {category.name}
                               </ListBox.Item>
                             ))}
@@ -202,9 +205,15 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
                         </Select.Trigger>
                         <Select.Popover>
                           <ListBox>
-                            <ListBox.Item id="ACTIVE">เปิดใช้งาน</ListBox.Item>
-                            <ListBox.Item id="INACTIVE">ปิด</ListBox.Item>
-                            <ListBox.Item id="PROMOTION">โปรโมชัน</ListBox.Item>
+                            <ListBox.Item id="ACTIVE" textValue="เปิดใช้งาน">
+                              เปิดใช้งาน
+                            </ListBox.Item>
+                            <ListBox.Item id="INACTIVE" textValue="ปิด">
+                              ปิด
+                            </ListBox.Item>
+                            <ListBox.Item id="PROMOTION" textValue="โปรโมชัน">
+                              โปรโมชัน
+                            </ListBox.Item>
                           </ListBox>
                         </Select.Popover>
                       </Select>
