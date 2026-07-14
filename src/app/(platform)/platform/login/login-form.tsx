@@ -18,7 +18,7 @@ export function LoginForm() {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "platform@possystem.local", password: "platform1234" },
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
