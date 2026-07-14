@@ -1,0 +1,99 @@
+import Link from "next/link";
+
+import { Card, Chip } from "@heroui/react";
+import { ArrowLeft } from "lucide-react";
+
+import { requirePlatformApiFetch } from "@/lib/platform-api";
+
+import { ShopStatusToggle } from "../shop-status-toggle";
+
+interface ShopDetail {
+  id: string;
+  name: string;
+  slug: string;
+  shopType: string;
+  address: string | null;
+  phone: string | null;
+  isActive: boolean;
+  bahtPerPoint: number;
+  createdAt: string;
+  revenueThisMonth: number;
+  _count: { members: number; staff: number; services: number };
+}
+
+function formatBaht(value: number) {
+  return `฿${value.toLocaleString("th-TH")}`;
+}
+
+export default async function PlatformShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const shop = await requirePlatformApiFetch<ShopDetail>(`/platform/shops/${id}`);
+
+  const statCards = [
+    { label: "รายได้เดือนนี้", value: formatBaht(shop.revenueThisMonth) },
+    { label: "สมาชิก", value: shop._count.members.toLocaleString("th-TH") },
+    { label: "พนักงาน", value: shop._count.staff.toLocaleString("th-TH") },
+    { label: "บริการ", value: shop._count.services.toLocaleString("th-TH") },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Link href="/platform/shops" className="flex items-center gap-1 text-muted text-sm hover:underline">
+        <ArrowLeft className="size-4" />
+        กลับไปหน้ารายชื่อร้าน
+      </Link>
+
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{shop.name}</h1>
+          <p className="text-muted">slug: {shop.slug}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Chip color={shop.isActive ? "success" : "danger"} variant="soft">
+            <Chip.Label>{shop.isActive ? "ใช้งานอยู่" : "ถูกระงับ"}</Chip.Label>
+          </Chip>
+          <ShopStatusToggle shopId={shop.id} isActive={shop.isActive} />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <Card key={stat.label}>
+            <Card.Header>
+              <Card.Description>{stat.label}</Card.Description>
+              <Card.Title className="text-2xl">{stat.value}</Card.Title>
+            </Card.Header>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <Card.Header>
+          <Card.Title>ข้อมูลร้าน</Card.Title>
+        </Card.Header>
+        <Card.Content className="grid gap-3 sm:grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs">ประเภทร้าน</span>
+            <span className="font-medium text-sm">{shop.shopType}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs">ที่อยู่</span>
+            <span className="font-medium text-sm">{shop.address ?? "-"}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs">เบอร์โทร</span>
+            <span className="font-medium text-sm">{shop.phone ?? "-"}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs">อัตราสะสม point (บาทต่อ 1 point)</span>
+            <span className="font-medium text-sm">{shop.bahtPerPoint}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs">สมัครเมื่อ</span>
+            <span className="font-medium text-sm">{new Date(shop.createdAt).toLocaleDateString("th-TH")}</span>
+          </div>
+        </Card.Content>
+      </Card>
+    </div>
+  );
+}
