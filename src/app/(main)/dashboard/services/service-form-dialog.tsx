@@ -16,11 +16,11 @@ import {
   toast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Pencil, Plus } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { createService } from "./actions";
+import { createService, updateService } from "./actions";
 
 interface Category {
   id: string;
@@ -36,28 +36,42 @@ const serviceSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE", "PROMOTION"]),
 });
 
-export function ServiceToolbar({ categories }: { categories: Category[] }) {
+interface ServiceFormDialogProps {
+  categories: Category[];
+  service?: {
+    id: string;
+    name: string;
+    description: string | null;
+    price: string | number;
+    durationMinutes: number;
+    status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+    category: Category;
+  };
+}
+
+export function ServiceFormDialog({ categories, service }: ServiceFormDialogProps) {
+  const isEdit = Boolean(service);
   const [open, setOpen] = useState(false);
   const form = useForm<z.input<typeof serviceSchema>, unknown, z.output<typeof serviceSchema>>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
-      categoryId: "",
-      name: "",
-      description: "",
-      price: 0,
-      durationMinutes: 30,
-      status: "ACTIVE",
+      categoryId: service?.category.id ?? "",
+      name: service?.name ?? "",
+      description: service?.description ?? "",
+      price: service ? Number(service.price) : 0,
+      durationMinutes: service?.durationMinutes ?? 30,
+      status: service?.status ?? "ACTIVE",
     },
   });
 
   async function onSubmit(data: z.output<typeof serviceSchema>) {
-    const result = await createService(data);
+    const result = service ? await updateService(service.id, data) : await createService(data);
     if (!result.success) {
       toast.danger(result.error);
       return;
     }
-    toast.success("เพิ่มบริการแล้ว");
-    form.reset();
+    toast.success(isEdit ? "แก้ไขบริการแล้ว" : "เพิ่มบริการแล้ว");
+    if (!isEdit) form.reset();
     setOpen(false);
   }
 
@@ -72,22 +86,29 @@ export function ServiceToolbar({ categories }: { categories: Category[] }) {
   return (
     <Modal isOpen={open} onOpenChange={handleOpenChange}>
       <Modal.Trigger
+        aria-label={isEdit ? "แก้ไขบริการ" : "เพิ่มบริการ"}
         className={buttonVariants({
-          variant: "primary",
+          variant: isEdit ? "secondary" : "primary",
+          size: isEdit ? "sm" : "md",
+          isIconOnly: isEdit,
           className: "!inline-flex shrink-0 items-center justify-center",
         })}
       >
-        <span className="inline-flex items-center gap-2 whitespace-nowrap">
-          <Plus className="size-4" />
-          เพิ่มบริการ
-        </span>
+        {isEdit ? (
+          <Pencil className="size-4" />
+        ) : (
+          <span className="inline-flex items-center gap-2 whitespace-nowrap">
+            <Plus className="size-4" />
+            เพิ่มบริการ
+          </span>
+        )}
       </Modal.Trigger>
       <Modal.Backdrop>
         <Modal.Container size="lg">
           <Modal.Dialog>
             <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <Modal.Header>
-                <Modal.Heading>เพิ่มบริการ</Modal.Heading>
+                <Modal.Heading>{isEdit ? "แก้ไขบริการ" : "เพิ่มบริการ"}</Modal.Heading>
                 <p className="text-muted text-sm">กรอกรายละเอียดบริการที่ร้านเปิดให้จอง</p>
               </Modal.Header>
               <Modal.Body className="flex flex-col gap-4">

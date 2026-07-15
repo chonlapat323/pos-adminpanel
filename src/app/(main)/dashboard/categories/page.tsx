@@ -1,11 +1,13 @@
 import { Card, Chip, EmptyState, Table } from "@heroui/react";
 import { Tag } from "lucide-react";
 
+import { DeleteConfirmButton } from "@/components/delete-confirm-button";
 import { ListPagination } from "@/components/list-pagination";
 import { type PaginatedResult, requireApiFetch } from "@/lib/api";
 
+import { deleteServiceCategory } from "./actions";
 import { CategoryFilter } from "./category-filter";
-import { CategoryToolbar } from "./category-toolbar";
+import { CategoryFormDialog } from "./category-form-dialog";
 
 interface Category {
   id: string;
@@ -36,7 +38,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
           <h1 className="text-2xl font-semibold">กลุ่มบริการ</h1>
           <p className="text-muted">จัดการกลุ่มบริการของร้าน เช่น บริการเล็บ บริการผม แว็กซ์ขน</p>
         </div>
-        <CategoryToolbar />
+        <CategoryFormDialog />
       </div>
 
       <Card>
@@ -64,6 +66,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
                   <Table.Column isRowHeader>ชื่อกลุ่มบริการ</Table.Column>
                   <Table.Column className="text-right">จำนวนบริการ</Table.Column>
                   <Table.Column>สถานะ</Table.Column>
+                  <Table.Column>จัดการ</Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {result.data.map((category) => (
@@ -74,6 +77,17 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
                         <Chip color={category.isHidden ? "default" : "success"} variant="soft">
                           <Chip.Label>{category.isHidden ? "ซ่อน" : "แสดง"}</Chip.Label>
                         </Chip>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <div className="flex items-center gap-2">
+                          <CategoryFormDialog category={category} />
+                          <DeleteConfirmButton
+                            title="ลบกลุ่มบริการ"
+                            description={`ยืนยันลบกลุ่มบริการ "${category.name}"${category._count.services > 0 ? ` — มีบริการอยู่ในกลุ่มนี้ ${category._count.services} รายการ` : ""}`}
+                            successMessage="ลบกลุ่มบริการแล้ว"
+                            onConfirm={() => deleteServiceCategory(category.id)}
+                          />
+                        </div>
                       </Table.Cell>
                     </Table.Row>
                   ))}

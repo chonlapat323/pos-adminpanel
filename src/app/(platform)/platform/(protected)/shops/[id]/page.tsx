@@ -6,12 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import { requirePlatformApiFetch } from "@/lib/platform-api";
 
 import { ShopStatusToggle } from "../shop-status-toggle";
+import { ShopEditDialog } from "./shop-edit-dialog";
 
 interface ShopDetail {
   id: string;
   name: string;
   slug: string;
-  shopType: string;
+  shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
   address: string | null;
   phone: string | null;
   isActive: boolean;
@@ -52,6 +53,7 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
           <Chip color={shop.isActive ? "success" : "danger"} variant="soft">
             <Chip.Label>{shop.isActive ? "ใช้งานอยู่" : "ถูกระงับ"}</Chip.Label>
           </Chip>
+          <ShopEditDialog shop={shop} />
           <ShopStatusToggle shopId={shop.id} isActive={shop.isActive} />
         </div>
       </div>

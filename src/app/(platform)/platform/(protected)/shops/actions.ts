@@ -28,6 +28,25 @@ export async function createShop(input: CreateShopInput): Promise<ActionResult> 
   }
 }
 
+export interface UpdateShopInput {
+  name: string;
+  shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
+  address?: string;
+  phone?: string;
+  bahtPerPoint: number;
+}
+
+export async function updateShop(shopId: string, input: UpdateShopInput): Promise<ActionResult> {
+  try {
+    await platformApiFetch(`/platform/shops/${shopId}`, { method: "PATCH", body: JSON.stringify(input) });
+    revalidatePath("/platform/shops");
+    revalidatePath(`/platform/shops/${shopId}`);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof ApiError ? error.message : "แก้ไขข้อมูลร้านไม่สำเร็จ" };
+  }
+}
+
 export async function updateShopStatus(shopId: string, isActive: boolean): Promise<ActionResult> {
   try {
     await platformApiFetch(`/platform/shops/${shopId}/status`, {

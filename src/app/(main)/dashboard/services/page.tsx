@@ -1,10 +1,12 @@
 import { Card, Chip, EmptyState, Table } from "@heroui/react";
 import { Scissors } from "lucide-react";
 
+import { DeleteConfirmButton } from "@/components/delete-confirm-button";
 import { ListPagination } from "@/components/list-pagination";
 import { type PaginatedResult, requireApiFetch } from "@/lib/api";
 
-import { ServiceToolbar } from "./service-toolbar";
+import { deleteService } from "./actions";
+import { ServiceFormDialog } from "./service-form-dialog";
 import { ServicesFilter } from "./services-filter";
 
 interface Category {
@@ -15,6 +17,7 @@ interface Category {
 interface Service {
   id: string;
   name: string;
+  description: string | null;
   price: string;
   durationMinutes: number;
   status: "ACTIVE" | "INACTIVE" | "PROMOTION";
@@ -63,7 +66,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
           <h1 className="text-2xl font-semibold">บริการ</h1>
           <p className="text-muted">จัดการบริการย่อยของร้าน</p>
         </div>
-        <ServiceToolbar categories={categories} />
+        <ServiceFormDialog categories={categories} />
       </div>
 
       <Card>
@@ -91,6 +94,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                   <Table.Column className="text-right">ราคา</Table.Column>
                   <Table.Column className="text-right">ระยะเวลา</Table.Column>
                   <Table.Column>สถานะ</Table.Column>
+                  <Table.Column>จัดการ</Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {result.data.map((service) => (
@@ -103,6 +107,17 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                         <Chip color={service.status === "ACTIVE" ? "success" : "default"} variant="soft">
                           <Chip.Label>{service.status}</Chip.Label>
                         </Chip>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <div className="flex items-center gap-2">
+                          <ServiceFormDialog categories={categories} service={service} />
+                          <DeleteConfirmButton
+                            title="ลบบริการ"
+                            description={`ยืนยันลบบริการ "${service.name}"`}
+                            successMessage="ลบบริการแล้ว"
+                            onConfirm={() => deleteService(service.id)}
+                          />
+                        </div>
                       </Table.Cell>
                     </Table.Row>
                   ))}

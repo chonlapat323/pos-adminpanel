@@ -2,6 +2,8 @@ import { Card } from "@heroui/react";
 
 import { requireApiFetch } from "@/lib/api";
 
+import { ShopSettingsForm } from "./shop-settings-form";
+
 interface Shop {
   name: string;
   slug: string;
@@ -9,19 +11,9 @@ interface Shop {
   phone: string | null;
   openTime: string | null;
   closeTime: string | null;
-  shopType: string;
+  shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
   bahtPerPoint: number;
 }
-
-const FIELD_LABELS: { key: keyof Shop; label: string }[] = [
-  { key: "name", label: "ชื่อร้าน" },
-  { key: "shopType", label: "ประเภทร้าน" },
-  { key: "address", label: "ที่อยู่" },
-  { key: "phone", label: "เบอร์โทร" },
-  { key: "openTime", label: "เวลาเปิด" },
-  { key: "closeTime", label: "เวลาปิด" },
-  { key: "bahtPerPoint", label: "อัตราสะสม point (บาทต่อ 1 point)" },
-];
 
 export default async function SettingsPage() {
   const shop = await requireApiFetch<Shop>("/shop");
@@ -38,13 +30,8 @@ export default async function SettingsPage() {
           <Card.Title>{shop.name}</Card.Title>
           <Card.Description>slug: {shop.slug}</Card.Description>
         </Card.Header>
-        <Card.Content className="grid gap-3 sm:grid-cols-2">
-          {FIELD_LABELS.map(({ key, label }) => (
-            <div key={key} className="flex flex-col gap-1">
-              <span className="text-muted text-xs">{label}</span>
-              <span className="font-medium text-sm">{shop[key] ?? "-"}</span>
-            </div>
-          ))}
+        <Card.Content>
+          <ShopSettingsForm shop={shop} />
         </Card.Content>
       </Card>
     </div>
