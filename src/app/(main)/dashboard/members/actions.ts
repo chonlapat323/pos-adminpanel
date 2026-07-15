@@ -9,6 +9,7 @@ export interface MemberInput {
   phone: string;
   birthday?: string;
   address?: string;
+  photoUrl?: string;
   note?: string;
 }
 

@@ -21,6 +21,7 @@ interface Service {
   price: string;
   durationMinutes: number;
   status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+  imageUrl: string | null;
   category: Category;
 }
 
@@ -89,6 +90,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
             <Table.ScrollContainer>
               <Table.Content aria-label="บริการทั้งหมด">
                 <Table.Header>
+                  <Table.Column>รูป</Table.Column>
                   <Table.Column isRowHeader>ชื่อบริการ</Table.Column>
                   <Table.Column>กลุ่ม</Table.Column>
                   <Table.Column className="text-right">ราคา</Table.Column>
@@ -99,6 +101,16 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                 <Table.Body>
                   {result.data.map((service) => (
                     <Table.Row key={service.id}>
+                      <Table.Cell>
+                        <div className="flex size-10 items-center justify-center overflow-hidden rounded-lg border border-border bg-default">
+                          {service.imageUrl ? (
+                            // biome-ignore lint/performance/noImgElement: local dev image server, next/image remote-pattern config not worth it yet
+                            <img src={service.imageUrl} alt="" className="size-full object-cover" />
+                          ) : (
+                            <Scissors className="size-4 text-muted" />
+                          )}
+                        </div>
+                      </Table.Cell>
                       <Table.Cell>{service.name}</Table.Cell>
                       <Table.Cell>{service.category.name}</Table.Cell>
                       <Table.Cell className="text-right">{formatBaht(service.price)}</Table.Cell>

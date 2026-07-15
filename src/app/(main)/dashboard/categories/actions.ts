@@ -7,6 +7,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 export interface CategoryInput {
   name: string;
   isHidden: boolean;
+  imageUrl?: string;
 }
 
 type ActionResult = { success: true } | { success: false; error: string };

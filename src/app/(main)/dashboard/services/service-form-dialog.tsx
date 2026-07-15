@@ -21,6 +21,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { EntityComboBoxField } from "@/components/entity-combo-box-field";
+import { ImageUploadField } from "@/components/image-upload-field";
 
 import { createService, updateService } from "./actions";
 
@@ -36,6 +37,7 @@ const serviceSchema = z.object({
   price: z.coerce.number().min(0, "ราคาต้องไม่ติดลบ"),
   durationMinutes: z.coerce.number().int().min(1, "ระยะเวลาต้องมากกว่า 0"),
   status: z.enum(["ACTIVE", "INACTIVE", "PROMOTION"]),
+  imageUrl: z.string(),
 });
 
 interface ServiceFormDialogProps {
@@ -47,6 +49,7 @@ interface ServiceFormDialogProps {
     price: string | number;
     durationMinutes: number;
     status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+    imageUrl: string | null;
     category: Category;
   };
 }
@@ -63,11 +66,13 @@ export function ServiceFormDialog({ categories, service }: ServiceFormDialogProp
       price: service ? Number(service.price) : 0,
       durationMinutes: service?.durationMinutes ?? 30,
       status: service?.status ?? "ACTIVE",
+      imageUrl: service?.imageUrl ?? "",
     },
   });
 
   async function onSubmit(data: z.output<typeof serviceSchema>) {
-    const result = service ? await updateService(service.id, data) : await createService(data);
+    const input = { ...data, imageUrl: data.imageUrl || undefined };
+    const result = service ? await updateService(service.id, input) : await createService(input);
     if (!result.success) {
       toast.danger(result.error);
       return;
@@ -164,6 +169,11 @@ export function ServiceFormDialog({ categories, service }: ServiceFormDialogProp
                       <TextArea placeholder="รายละเอียดบริการ" />
                     </TextField>
                   )}
+                />
+                <Controller
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => <ImageUploadField value={field.value} onChange={field.onChange} />}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <Controller

@@ -19,15 +19,18 @@ import { ChevronDown, Pencil, Plus } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ImageUploadField } from "@/components/image-upload-field";
+
 import { createServiceCategory, updateServiceCategory } from "./actions";
 
 const categorySchema = z.object({
   name: z.string().min(1, "กรอกชื่อกลุ่มบริการ"),
   isHidden: z.enum(["true", "false"]),
+  imageUrl: z.string(),
 });
 
 interface CategoryFormDialogProps {
-  category?: { id: string; name: string; isHidden: boolean };
+  category?: { id: string; name: string; isHidden: boolean; imageUrl: string | null };
 }
 
 export function CategoryFormDialog({ category }: CategoryFormDialogProps) {
@@ -38,11 +41,12 @@ export function CategoryFormDialog({ category }: CategoryFormDialogProps) {
     defaultValues: {
       name: category?.name ?? "",
       isHidden: category?.isHidden ? "true" : "false",
+      imageUrl: category?.imageUrl ?? "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof categorySchema>) {
-    const input = { name: data.name, isHidden: data.isHidden === "true" };
+    const input = { name: data.name, isHidden: data.isHidden === "true", imageUrl: data.imageUrl || undefined };
     const result = category ? await updateServiceCategory(category.id, input) : await createServiceCategory(input);
     if (!result.success) {
       toast.danger(result.error);
@@ -99,6 +103,11 @@ export function CategoryFormDialog({ category }: CategoryFormDialogProps) {
                       {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
                     </TextField>
                   )}
+                />
+                <Controller
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => <ImageUploadField value={field.value} onChange={field.onChange} />}
                 />
                 <Controller
                   control={form.control}

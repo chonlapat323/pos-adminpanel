@@ -8,6 +8,8 @@ import { Pencil, Plus } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ImageUploadField } from "@/components/image-upload-field";
+
 import { createMember, type MemberInput, updateMember } from "./actions";
 
 const memberSchema = z.object({
@@ -15,6 +17,7 @@ const memberSchema = z.object({
   phone: z.string().min(1, "กรอกเบอร์โทร"),
   birthday: z.string().optional(),
   address: z.string().optional(),
+  photoUrl: z.string(),
   note: z.string().optional(),
 });
 
@@ -25,6 +28,7 @@ interface MemberFormDialogProps {
     phone: string;
     birthday: string | null;
     address: string | null;
+    photoUrl: string | null;
     note: string | null;
   };
 }
@@ -39,6 +43,7 @@ export function MemberFormDialog({ member }: MemberFormDialogProps) {
       phone: member?.phone ?? "",
       birthday: member?.birthday ? member.birthday.slice(0, 10) : "",
       address: member?.address ?? "",
+      photoUrl: member?.photoUrl ?? "",
       note: member?.note ?? "",
     },
   });
@@ -49,6 +54,7 @@ export function MemberFormDialog({ member }: MemberFormDialogProps) {
       phone: data.phone,
       birthday: data.birthday || undefined,
       address: data.address || undefined,
+      photoUrl: data.photoUrl || undefined,
       note: data.note || undefined,
     };
     const result = member ? await updateMember(member.id, input) : await createMember(input);
@@ -90,6 +96,11 @@ export function MemberFormDialog({ member }: MemberFormDialogProps) {
                 <p className="text-muted text-sm">ข้อมูลสมาชิกสำหรับสะสม/แลก point และประวัติการใช้บริการ</p>
               </Modal.Header>
               <Modal.Body className="flex flex-col gap-4">
+                <Controller
+                  control={form.control}
+                  name="photoUrl"
+                  render={({ field }) => <ImageUploadField value={field.value} onChange={field.onChange} />}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <Controller
                     control={form.control}

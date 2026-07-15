@@ -8,6 +8,7 @@ import { type PaginatedResult, requireApiFetch } from "@/lib/api";
 import { deleteMember } from "./actions";
 import { MemberFilter } from "./member-filter";
 import { MemberFormDialog } from "./member-form-dialog";
+import { VisitPhotosDialog } from "./visit-photos-dialog";
 
 interface Member {
   id: string;
@@ -16,6 +17,7 @@ interface Member {
   pointBalance: number;
   birthday: string | null;
   address: string | null;
+  photoUrl: string | null;
   note: string | null;
   createdAt: string;
 }
@@ -67,6 +69,7 @@ export default async function MembersPage({ searchParams }: PageProps) {
             <Table.ScrollContainer>
               <Table.Content aria-label="สมาชิกทั้งหมด">
                 <Table.Header>
+                  <Table.Column>รูป</Table.Column>
                   <Table.Column isRowHeader>ชื่อ</Table.Column>
                   <Table.Column>เบอร์โทร</Table.Column>
                   <Table.Column className="text-right">Point คงเหลือ</Table.Column>
@@ -76,12 +79,23 @@ export default async function MembersPage({ searchParams }: PageProps) {
                 <Table.Body>
                   {result.data.map((member) => (
                     <Table.Row key={member.id}>
+                      <Table.Cell>
+                        <div className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-border bg-default">
+                          {member.photoUrl ? (
+                            // biome-ignore lint/performance/noImgElement: local dev image server, next/image remote-pattern config not worth it yet
+                            <img src={member.photoUrl} alt="" className="size-full object-cover" />
+                          ) : (
+                            <Users className="size-4 text-muted" />
+                          )}
+                        </div>
+                      </Table.Cell>
                       <Table.Cell>{member.name}</Table.Cell>
                       <Table.Cell>{member.phone}</Table.Cell>
                       <Table.Cell className="text-right">{member.pointBalance.toLocaleString("th-TH")}</Table.Cell>
                       <Table.Cell>{new Date(member.createdAt).toLocaleDateString("th-TH")}</Table.Cell>
                       <Table.Cell>
                         <div className="flex items-center gap-2">
+                          <VisitPhotosDialog memberId={member.id} memberName={member.name} />
                           <MemberFormDialog member={member} />
                           <DeleteConfirmButton
                             title="ลบสมาชิก"
