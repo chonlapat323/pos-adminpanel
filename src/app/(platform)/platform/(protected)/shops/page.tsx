@@ -1,6 +1,4 @@
-import Link from "next/link";
-
-import { Card, Chip, EmptyState, Table } from "@heroui/react";
+import { Card, EmptyState } from "@heroui/react";
 import { Building2 } from "lucide-react";
 
 import { ListPagination } from "@/components/list-pagination";
@@ -8,8 +6,8 @@ import type { PaginatedResult } from "@/lib/api";
 import { requirePlatformApiFetch } from "@/lib/platform-api";
 
 import { ShopFilter } from "./shop-filter";
-import { ShopStatusToggle } from "./shop-status-toggle";
 import { ShopToolbar } from "./shop-toolbar";
+import { ShopsTable } from "./shops-table";
 
 interface Shop {
   id: string;
@@ -63,42 +61,7 @@ export default async function PlatformShopsPage({ searchParams }: PageProps) {
             </div>
           </EmptyState>
         ) : (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="ร้านทั้งหมด">
-                <Table.Header>
-                  <Table.Column isRowHeader>ชื่อร้าน</Table.Column>
-                  <Table.Column>ประเภท</Table.Column>
-                  <Table.Column className="text-right">สมาชิก</Table.Column>
-                  <Table.Column className="text-right">พนักงาน</Table.Column>
-                  <Table.Column>สถานะ</Table.Column>
-                  <Table.Column>จัดการ</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {result.data.map((shop) => (
-                    <Table.Row key={shop.id}>
-                      <Table.Cell>
-                        <Link href={`/platform/shops/${shop.id}`} className="hover:underline">
-                          {shop.name}
-                        </Link>
-                      </Table.Cell>
-                      <Table.Cell>{shop.shopType}</Table.Cell>
-                      <Table.Cell className="text-right">{shop._count.members}</Table.Cell>
-                      <Table.Cell className="text-right">{shop._count.staff}</Table.Cell>
-                      <Table.Cell>
-                        <Chip color={shop.isActive ? "success" : "danger"} variant="soft">
-                          <Chip.Label>{shop.isActive ? "ใช้งานอยู่" : "ถูกระงับ"}</Chip.Label>
-                        </Chip>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <ShopStatusToggle shopId={shop.id} isActive={shop.isActive} />
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+          <ShopsTable shops={result.data} />
         )}
       </Card>
 
