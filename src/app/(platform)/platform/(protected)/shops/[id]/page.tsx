@@ -44,9 +44,9 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
 
   const statCards: { label: string; value: string; href?: string }[] = [
     { label: "รายได้เดือนนี้", value: formatBaht(shop.revenueThisMonth) },
-    { label: "สมาชิก", value: shop._count.members.toLocaleString("th-TH"), href: `/platform/shops/${id}/members` },
-    { label: "พนักงาน", value: shop._count.staff.toLocaleString("th-TH"), href: `/platform/shops/${id}/staff` },
-    { label: "บริการ", value: shop._count.services.toLocaleString("th-TH") },
+    { label: "สมาชิก", value: shop._count.members.toLocaleString("th-TH"), href: `/platform/members?shopId=${id}` },
+    { label: "พนักงาน", value: shop._count.staff.toLocaleString("th-TH"), href: `/platform/staff?shopId=${id}` },
+    { label: "บริการ", value: shop._count.services.toLocaleString("th-TH"), href: `/platform/services?shopId=${id}` },
   ];
 
   return (
