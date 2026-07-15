@@ -13,6 +13,7 @@ export interface CreatePlatformServiceInput {
   price: number;
   durationMinutes: number;
   status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+  imageUrl?: string;
 }
 
 export interface UpdatePlatformServiceInput {
@@ -22,6 +23,7 @@ export interface UpdatePlatformServiceInput {
   price: number;
   durationMinutes: number;
   status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+  imageUrl?: string;
 }
 
 type ActionResult = { success: true } | { success: false; error: string };

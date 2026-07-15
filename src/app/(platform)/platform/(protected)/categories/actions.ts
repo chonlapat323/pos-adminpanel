@@ -9,11 +9,13 @@ export interface CreatePlatformCategoryInput {
   shopId: string;
   name: string;
   isHidden: boolean;
+  imageUrl?: string;
 }
 
 export interface UpdatePlatformCategoryInput {
   name: string;
   isHidden: boolean;
+  imageUrl?: string;
 }
 
 type ActionResult = { success: true } | { success: false; error: string };

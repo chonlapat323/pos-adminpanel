@@ -5,15 +5,24 @@ import { useRef, useState } from "react";
 import { Button, Label, toast } from "@heroui/react";
 import { ImageOff, Upload } from "lucide-react";
 
-import { uploadImage } from "@/lib/upload";
+import { type UploadResult, uploadImage } from "@/lib/upload";
 
 interface ImageUploadFieldProps {
   value: string;
   onChange: (url: string) => void;
   label?: string;
+  /** Overrides the shop-admin upload action — pass this on platform-admin forms, e.g. `(fd) => uploadPlatformImage(fd, shopId)`. */
+  upload?: (formData: FormData) => Promise<UploadResult>;
+  isDisabled?: boolean;
 }
 
-export function ImageUploadField({ value, onChange, label = "รูปภาพ" }: ImageUploadFieldProps) {
+export function ImageUploadField({
+  value,
+  onChange,
+  label = "รูปภาพ",
+  upload = uploadImage,
+  isDisabled = false,
+}: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +34,7 @@ export function ImageUploadField({ value, onChange, label = "รูปภาพ"
     try {
       const formData = new FormData();
       formData.set("file", file);
-      const result = await uploadImage(formData);
+      const result = await upload(formData);
       if (!result.success) {
         toast.danger(result.error);
         return;
@@ -54,7 +63,7 @@ export function ImageUploadField({ value, onChange, label = "รูปภาพ"
             type="button"
             variant="secondary"
             size="sm"
-            isDisabled={uploading}
+            isDisabled={uploading || isDisabled}
             onPress={() => inputRef.current?.click()}
           >
             <Upload className="size-4" />
@@ -71,6 +80,7 @@ export function ImageUploadField({ value, onChange, label = "รูปภาพ"
           type="file"
           accept="image/jpeg,image/png,image/webp"
           className="hidden"
+          disabled={isDisabled}
           onChange={handleFileChange}
         />
       </div>

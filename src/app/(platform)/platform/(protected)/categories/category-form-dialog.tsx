@@ -16,10 +16,12 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, Pencil, Plus } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { ImageUploadField } from "@/components/image-upload-field";
 import { ShopSelectField } from "@/components/shop-select-field";
+import { uploadPlatformImage } from "@/lib/upload";
 
 import { createPlatformCategory, updatePlatformCategory } from "./actions";
 
@@ -32,11 +34,12 @@ const categorySchema = z.object({
   shopId: z.string().min(1, "เลือกร้าน"),
   name: z.string().min(1, "กรอกชื่อกลุ่มบริการ"),
   isHidden: z.enum(["true", "false"]),
+  imageUrl: z.string(),
 });
 
 interface CategoryFormDialogProps {
   shops: ShopOption[];
-  category?: { id: string; name: string; isHidden: boolean; shop: ShopOption };
+  category?: { id: string; name: string; isHidden: boolean; imageUrl: string | null; shop: ShopOption };
 }
 
 export function CategoryFormDialog({ shops, category }: CategoryFormDialogProps) {
@@ -48,13 +51,22 @@ export function CategoryFormDialog({ shops, category }: CategoryFormDialogProps)
       shopId: category?.shop.id ?? "",
       name: category?.name ?? "",
       isHidden: category?.isHidden ? "true" : "false",
+      imageUrl: category?.imageUrl ?? "",
     },
   });
 
+  const shopId = useWatch({ control: form.control, name: "shopId" });
+
   async function onSubmit(data: z.infer<typeof categorySchema>) {
+    const imageUrl = data.imageUrl || undefined;
     const result = category
-      ? await updatePlatformCategory(category.id, { name: data.name, isHidden: data.isHidden === "true" })
-      : await createPlatformCategory({ shopId: data.shopId, name: data.name, isHidden: data.isHidden === "true" });
+      ? await updatePlatformCategory(category.id, { name: data.name, isHidden: data.isHidden === "true", imageUrl })
+      : await createPlatformCategory({
+          shopId: data.shopId,
+          name: data.name,
+          isHidden: data.isHidden === "true",
+          imageUrl,
+        });
     if (!result.success) {
       toast.danger(result.error);
       return;
@@ -122,6 +134,18 @@ export function CategoryFormDialog({ shops, category }: CategoryFormDialogProps)
                       <Input placeholder="เช่น บริการเล็บ" />
                       {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
                     </TextField>
+                  )}
+                />
+                <Controller
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <ImageUploadField
+                      value={field.value}
+                      onChange={field.onChange}
+                      upload={(formData) => uploadPlatformImage(formData, shopId)}
+                      isDisabled={!shopId}
+                    />
                   )}
                 />
                 <Controller

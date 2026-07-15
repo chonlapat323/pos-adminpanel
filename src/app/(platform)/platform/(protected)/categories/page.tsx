@@ -19,6 +19,7 @@ interface Category {
   id: string;
   name: string;
   isHidden: boolean;
+  imageUrl: string | null;
   shop: Shop;
   _count: { services: number };
 }
@@ -71,6 +72,7 @@ export default async function PlatformCategoriesPage({ searchParams }: PageProps
             <Table.ScrollContainer>
               <Table.Content aria-label="กลุ่มบริการทั้งหมด">
                 <Table.Header>
+                  <Table.Column>รูป</Table.Column>
                   <Table.Column isRowHeader>ชื่อกลุ่มบริการ</Table.Column>
                   <Table.Column>ร้าน</Table.Column>
                   <Table.Column className="text-right">จำนวนบริการ</Table.Column>
@@ -80,6 +82,16 @@ export default async function PlatformCategoriesPage({ searchParams }: PageProps
                 <Table.Body>
                   {result.data.map((category) => (
                     <Table.Row key={category.id}>
+                      <Table.Cell>
+                        <div className="flex size-10 items-center justify-center overflow-hidden rounded-lg border border-border bg-default">
+                          {category.imageUrl ? (
+                            // biome-ignore lint/performance/noImgElement: local dev image server, next/image remote-pattern config not worth it yet
+                            <img src={category.imageUrl} alt="" className="size-full object-cover" />
+                          ) : (
+                            <Tag className="size-4 text-muted" />
+                          )}
+                        </div>
+                      </Table.Cell>
                       <Table.Cell>{category.name}</Table.Cell>
                       <Table.Cell>{category.shop.name}</Table.Cell>
                       <Table.Cell className="text-right">{category._count.services}</Table.Cell>

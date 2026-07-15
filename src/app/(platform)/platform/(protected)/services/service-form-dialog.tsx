@@ -21,7 +21,9 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { EntityComboBoxField } from "@/components/entity-combo-box-field";
+import { ImageUploadField } from "@/components/image-upload-field";
 import { ShopSelectField } from "@/components/shop-select-field";
+import { uploadPlatformImage } from "@/lib/upload";
 
 import { createPlatformService, updatePlatformService } from "./actions";
 
@@ -44,6 +46,7 @@ const serviceSchema = z.object({
   price: z.coerce.number().min(0, "ราคาต้องไม่ติดลบ"),
   durationMinutes: z.coerce.number().int().min(1, "ระยะเวลาต้องมากกว่า 0"),
   status: z.enum(["ACTIVE", "INACTIVE", "PROMOTION"]),
+  imageUrl: z.string(),
 });
 
 interface ServiceFormDialogProps {
@@ -56,6 +59,7 @@ interface ServiceFormDialogProps {
     price: string | number;
     durationMinutes: number;
     status: "ACTIVE" | "INACTIVE" | "PROMOTION";
+    imageUrl: string | null;
     shop: ShopOption;
     category: { id: string; name: string };
   };
@@ -74,6 +78,7 @@ export function ServiceFormDialog({ shops, categories, service }: ServiceFormDia
       price: service ? Number(service.price) : 0,
       durationMinutes: service?.durationMinutes ?? 30,
       status: service?.status ?? "ACTIVE",
+      imageUrl: service?.imageUrl ?? "",
     },
   });
 
@@ -90,6 +95,7 @@ export function ServiceFormDialog({ shops, categories, service }: ServiceFormDia
   }, [shopId]);
 
   async function onSubmit(data: z.output<typeof serviceSchema>) {
+    const imageUrl = data.imageUrl || undefined;
     const result = service
       ? await updatePlatformService(service.id, {
           categoryId: data.categoryId,
@@ -98,8 +104,9 @@ export function ServiceFormDialog({ shops, categories, service }: ServiceFormDia
           price: data.price,
           durationMinutes: data.durationMinutes,
           status: data.status,
+          imageUrl,
         })
-      : await createPlatformService(data);
+      : await createPlatformService({ ...data, imageUrl });
     if (!result.success) {
       toast.danger(result.error);
       return;
@@ -201,6 +208,18 @@ export function ServiceFormDialog({ shops, categories, service }: ServiceFormDia
                       <Label>คำอธิบาย (ไม่บังคับ)</Label>
                       <TextArea placeholder="รายละเอียดบริการ" />
                     </TextField>
+                  )}
+                />
+                <Controller
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <ImageUploadField
+                      value={field.value}
+                      onChange={field.onChange}
+                      upload={(formData) => uploadPlatformImage(formData, shopId)}
+                      isDisabled={!shopId}
+                    />
                   )}
                 />
                 <div className="grid grid-cols-2 gap-4">

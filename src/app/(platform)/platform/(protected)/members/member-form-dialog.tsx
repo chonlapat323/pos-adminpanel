@@ -5,10 +5,12 @@ import { useState } from "react";
 import { Button, buttonVariants, ErrorMessage, Input, Label, Modal, TextArea, TextField, toast } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Plus } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { ImageUploadField } from "@/components/image-upload-field";
 import { ShopSelectField } from "@/components/shop-select-field";
+import { uploadPlatformImage } from "@/lib/upload";
 
 import { createPlatformMember, updatePlatformMember } from "./actions";
 
@@ -23,6 +25,7 @@ const memberSchema = z.object({
   phone: z.string().min(1, "กรอกเบอร์โทร"),
   birthday: z.string().optional(),
   address: z.string().optional(),
+  photoUrl: z.string(),
   note: z.string().optional(),
 });
 
@@ -34,6 +37,7 @@ interface MemberFormDialogProps {
     phone: string;
     birthday: string | null;
     address: string | null;
+    photoUrl: string | null;
     note: string | null;
     shop: ShopOption;
   };
@@ -50,9 +54,12 @@ export function MemberFormDialog({ shops, member }: MemberFormDialogProps) {
       phone: member?.phone ?? "",
       birthday: member?.birthday ? member.birthday.slice(0, 10) : "",
       address: member?.address ?? "",
+      photoUrl: member?.photoUrl ?? "",
       note: member?.note ?? "",
     },
   });
+
+  const shopId = useWatch({ control: form.control, name: "shopId" });
 
   async function onSubmit(data: z.infer<typeof memberSchema>) {
     const payload = {
@@ -60,6 +67,7 @@ export function MemberFormDialog({ shops, member }: MemberFormDialogProps) {
       phone: data.phone,
       birthday: data.birthday || undefined,
       address: data.address || undefined,
+      photoUrl: data.photoUrl || undefined,
       note: data.note || undefined,
     };
     const result = member
@@ -116,6 +124,18 @@ export function MemberFormDialog({ shops, member }: MemberFormDialogProps) {
                     )}
                   />
                 )}
+                <Controller
+                  control={form.control}
+                  name="photoUrl"
+                  render={({ field }) => (
+                    <ImageUploadField
+                      value={field.value}
+                      onChange={field.onChange}
+                      upload={(formData) => uploadPlatformImage(formData, shopId)}
+                      isDisabled={!shopId}
+                    />
+                  )}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <Controller
                     control={form.control}

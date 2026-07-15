@@ -11,6 +11,7 @@ export interface CreatePlatformMemberInput {
   phone: string;
   birthday?: string;
   address?: string;
+  photoUrl?: string;
   note?: string;
 }
 
@@ -19,6 +20,7 @@ export interface UpdatePlatformMemberInput {
   phone: string;
   birthday?: string;
   address?: string;
+  photoUrl?: string;
   note?: string;
 }
 

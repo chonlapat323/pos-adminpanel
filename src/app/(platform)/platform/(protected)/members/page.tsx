@@ -22,6 +22,7 @@ interface Member {
   pointBalance: number;
   birthday: string | null;
   address: string | null;
+  photoUrl: string | null;
   note: string | null;
   createdAt: string;
   shop: Shop;
@@ -75,6 +76,7 @@ export default async function PlatformMembersPage({ searchParams }: PageProps) {
             <Table.ScrollContainer>
               <Table.Content aria-label="สมาชิกทั้งหมด">
                 <Table.Header>
+                  <Table.Column>รูป</Table.Column>
                   <Table.Column isRowHeader>ชื่อ</Table.Column>
                   <Table.Column>ร้าน</Table.Column>
                   <Table.Column>เบอร์โทร</Table.Column>
@@ -84,6 +86,16 @@ export default async function PlatformMembersPage({ searchParams }: PageProps) {
                 <Table.Body>
                   {result.data.map((member) => (
                     <Table.Row key={member.id}>
+                      <Table.Cell>
+                        <div className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-border bg-default">
+                          {member.photoUrl ? (
+                            // biome-ignore lint/performance/noImgElement: local dev image server, next/image remote-pattern config not worth it yet
+                            <img src={member.photoUrl} alt="" className="size-full object-cover" />
+                          ) : (
+                            <Users className="size-4 text-muted" />
+                          )}
+                        </div>
+                      </Table.Cell>
                       <Table.Cell>{member.name}</Table.Cell>
                       <Table.Cell>{member.shop.name}</Table.Cell>
                       <Table.Cell>{member.phone}</Table.Cell>
