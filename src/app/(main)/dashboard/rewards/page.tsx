@@ -86,7 +86,7 @@ export default async function RewardsPage({ searchParams }: PageProps) {
                             title="ลบรางวัล"
                             description={`ยืนยันลบรางวัล "${reward.name}"`}
                             successMessage="ลบรางวัลแล้ว"
-                            onConfirm={() => deleteReward(reward.id)}
+                            onConfirm={deleteReward.bind(null, reward.id)}
                           />
                         </div>
                       </Table.Cell>

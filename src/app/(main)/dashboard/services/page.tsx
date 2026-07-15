@@ -115,7 +115,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                             title="ลบบริการ"
                             description={`ยืนยันลบบริการ "${service.name}"`}
                             successMessage="ลบบริการแล้ว"
-                            onConfirm={() => deleteService(service.id)}
+                            onConfirm={deleteService.bind(null, service.id)}
                           />
                         </div>
                       </Table.Cell>

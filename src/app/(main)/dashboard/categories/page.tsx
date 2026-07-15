@@ -85,7 +85,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
                             title="ลบกลุ่มบริการ"
                             description={`ยืนยันลบกลุ่มบริการ "${category.name}"${category._count.services > 0 ? ` — มีบริการอยู่ในกลุ่มนี้ ${category._count.services} รายการ` : ""}`}
                             successMessage="ลบกลุ่มบริการแล้ว"
-                            onConfirm={() => deleteServiceCategory(category.id)}
+                            onConfirm={deleteServiceCategory.bind(null, category.id)}
                           />
                         </div>
                       </Table.Cell>

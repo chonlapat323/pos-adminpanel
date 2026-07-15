@@ -93,7 +93,7 @@ export default async function StaffPage({ searchParams }: PageProps) {
                             title="ลบพนักงาน"
                             description={`ยืนยันลบบัญชีพนักงาน "${member.name}" — จะไม่สามารถ login เข้าใช้งาน POS ได้อีก`}
                             successMessage="ลบพนักงานแล้ว"
-                            onConfirm={() => deleteStaff(member.id)}
+                            onConfirm={deleteStaff.bind(null, member.id)}
                           />
                         </div>
                       </Table.Cell>

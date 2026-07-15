@@ -87,7 +87,7 @@ export default async function MembersPage({ searchParams }: PageProps) {
                             title="ลบสมาชิก"
                             description={`ยืนยันลบสมาชิก "${member.name}" — ประวัติ point และการใช้บริการของสมาชิกนี้จะหายไปด้วย`}
                             successMessage="ลบสมาชิกแล้ว"
-                            onConfirm={() => deleteMember(member.id)}
+                            onConfirm={deleteMember.bind(null, member.id)}
                           />
                         </div>
                       </Table.Cell>
