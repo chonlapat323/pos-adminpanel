@@ -12,6 +12,13 @@ export interface PlatformSession {
   name: string;
 }
 
+export interface PlatformSessionFull {
+  id: string;
+  name: string;
+  permissions: string[];
+  isSuperAdmin: boolean;
+}
+
 export async function platformLogin(
   email: string,
   password: string,
@@ -65,6 +72,22 @@ export async function getCurrentPlatformAdmin(): Promise<PlatformSession | null>
     const json = Buffer.from(payloadSegment, "base64url").toString("utf8");
     const payload = JSON.parse(json);
     return { id: payload.sub, name: payload.name };
+  } catch {
+    return null;
+  }
+}
+
+export async function getCurrentPlatformAdminFull(): Promise<PlatformSessionFull | null> {
+  const token = await getPlatformToken();
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${API_URL}/platform/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as PlatformSessionFull;
   } catch {
     return null;
   }

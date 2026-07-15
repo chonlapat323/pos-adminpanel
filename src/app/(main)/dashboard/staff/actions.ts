@@ -10,6 +10,7 @@ export interface CreateStaffInput {
   phone?: string;
   password: string;
   role: "OWNER" | "STAFF";
+  roleId?: string | null;
 }
 
 export interface UpdateStaffInput {
@@ -18,6 +19,7 @@ export interface UpdateStaffInput {
   phone?: string;
   password?: string;
   role: "OWNER" | "STAFF";
+  roleId?: string | null;
   isActive: boolean;
 }
 

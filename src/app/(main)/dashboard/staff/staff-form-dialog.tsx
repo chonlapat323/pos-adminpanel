@@ -30,22 +30,30 @@ function buildStaffSchema(isEdit: boolean) {
       ? z.union([z.literal(""), z.string().min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร")])
       : z.string().min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"),
     role: z.enum(["OWNER", "STAFF"]),
+    roleId: z.string(),
     isActive: z.enum(["true", "false"]),
   });
 }
 
+interface RoleOption {
+  id: string;
+  name: string;
+}
+
 interface StaffFormDialogProps {
+  roles: RoleOption[];
   staff?: {
     id: string;
     name: string;
     email: string;
     phone: string | null;
     role: "OWNER" | "STAFF";
+    roleId: string | null;
     isActive: boolean;
   };
 }
 
-export function StaffFormDialog({ staff }: StaffFormDialogProps) {
+export function StaffFormDialog({ roles, staff }: StaffFormDialogProps) {
   const isEdit = Boolean(staff);
   const [open, setOpen] = useState(false);
   const staffSchema = buildStaffSchema(isEdit);
@@ -57,11 +65,13 @@ export function StaffFormDialog({ staff }: StaffFormDialogProps) {
       phone: staff?.phone ?? "",
       password: "",
       role: staff?.role ?? "STAFF",
+      roleId: staff?.roleId ?? "__none__",
       isActive: staff ? (staff.isActive ? "true" : "false") : "true",
     },
   });
 
   async function onSubmit(data: z.infer<typeof staffSchema>) {
+    const roleId = data.roleId === "__none__" ? null : data.roleId;
     const result = staff
       ? await updateStaff(staff.id, {
           name: data.name,
@@ -69,6 +79,7 @@ export function StaffFormDialog({ staff }: StaffFormDialogProps) {
           phone: data.phone || undefined,
           password: data.password || undefined,
           role: data.role,
+          roleId,
           isActive: data.isActive === "true",
         })
       : await createStaff({
@@ -77,6 +88,7 @@ export function StaffFormDialog({ staff }: StaffFormDialogProps) {
           phone: data.phone || undefined,
           password: data.password,
           role: data.role,
+          roleId,
         });
     if (!result.success) {
       toast.danger(result.error);
@@ -208,6 +220,37 @@ export function StaffFormDialog({ staff }: StaffFormDialogProps) {
                               <ListBox.Item id="OWNER" textValue="เจ้าของร้าน">
                                 เจ้าของร้าน
                               </ListBox.Item>
+                            </ListBox>
+                          </Select.Popover>
+                        </Select>
+                      </div>
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name="roleId"
+                    render={({ field }) => (
+                      <div className="flex flex-col gap-1.5">
+                        <Label>Role (สิทธิ์การใช้งาน)</Label>
+                        <Select
+                          selectedKey={field.value}
+                          onSelectionChange={(key) => field.onChange(String(key))}
+                          fullWidth
+                        >
+                          <Select.Trigger>
+                            <Select.Value />
+                            <ChevronDown className="size-4" />
+                          </Select.Trigger>
+                          <Select.Popover>
+                            <ListBox>
+                              <ListBox.Item id="__none__" textValue="ไม่มี (ใช้สิทธิ์ตามบทบาทเท่านั้น)">
+                                ไม่มี (ใช้สิทธิ์ตามบทบาทเท่านั้น)
+                              </ListBox.Item>
+                              {roles.map((role) => (
+                                <ListBox.Item key={role.id} id={role.id} textValue={role.name}>
+                                  {role.name}
+                                </ListBox.Item>
+                              ))}
                             </ListBox>
                           </Select.Popover>
                         </Select>

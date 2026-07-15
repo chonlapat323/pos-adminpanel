@@ -1,0 +1,113 @@
+import { redirect } from "next/navigation";
+
+import { Card, EmptyState, Table } from "@heroui/react";
+import { ShieldCheck } from "lucide-react";
+
+import { DeleteConfirmButton } from "@/components/delete-confirm-button";
+import { requirePlatformApiFetch } from "@/lib/platform-api";
+import { getCurrentPlatformAdminFull } from "@/lib/platform-auth";
+
+import { deletePlatformRole } from "./actions";
+import { RoleFormDialog } from "./role-form-dialog";
+
+interface PermissionOption {
+  key: string;
+  label: string;
+}
+
+interface Role {
+  id: string;
+  name: string;
+  permissions: string[];
+  _count: { platformAdmins: number };
+}
+
+export default async function PlatformRolesPage() {
+  const admin = await getCurrentPlatformAdminFull();
+  if (!admin?.isSuperAdmin) {
+    redirect("/unauthorized");
+  }
+
+  const [roles, catalog] = await Promise.all([
+    requirePlatformApiFetch<Role[]>("/platform/roles"),
+    requirePlatformApiFetch<PermissionOption[]>("/platform/roles/catalog"),
+  ]);
+
+  const labelByKey = new Map(catalog.map((p) => [p.key, p.label]));
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">สิทธิ์การใช้งาน (Role)</h1>
+          <p className="text-muted">กำหนด role ให้ platform admin แต่ละคน เลือกได้ว่าจัดการอะไรได้บ้าง</p>
+        </div>
+        <RoleFormDialog catalog={catalog} />
+      </div>
+
+      <Card>
+        <Card.Header>
+          <Card.Title>Role ทั้งหมด ({roles.length})</Card.Title>
+        </Card.Header>
+        {roles.length === 0 ? (
+          <EmptyState className="border-none">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-default">
+                <ShieldCheck className="size-4" />
+              </div>
+              <p className="font-medium text-sm">ยังไม่มี role</p>
+              <p className="max-w-sm text-muted text-sm">
+                Super-admin (ไม่มี role) มีสิทธิ์เต็มอยู่แล้วเสมอ — สร้าง role เพื่อกำหนดสิทธิ์ที่จำกัดให้ admin คนอื่น
+              </p>
+            </div>
+          </EmptyState>
+        ) : (
+          <Table>
+            <Table.ScrollContainer>
+              <Table.Content aria-label="Role ทั้งหมด">
+                <Table.Header>
+                  <Table.Column isRowHeader>ชื่อ Role</Table.Column>
+                  <Table.Column>สิทธิ์การใช้งาน</Table.Column>
+                  <Table.Column className="text-right">Admin ที่ใช้ role นี้</Table.Column>
+                  <Table.Column>จัดการ</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {roles.map((role) => (
+                    <Table.Row key={role.id}>
+                      <Table.Cell>{role.name}</Table.Cell>
+                      <Table.Cell className="max-w-md">
+                        <div className="flex flex-wrap gap-1">
+                          {role.permissions.length === 0 ? (
+                            <span className="text-muted text-xs">ไม่มีสิทธิ์</span>
+                          ) : (
+                            role.permissions.map((key) => (
+                              <span key={key} className="rounded-md bg-default px-2 py-0.5 text-xs">
+                                {labelByKey.get(key) ?? key}
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell className="text-right">{role._count.platformAdmins}</Table.Cell>
+                      <Table.Cell>
+                        <div className="flex items-center gap-2">
+                          <RoleFormDialog catalog={catalog} role={role} />
+                          <DeleteConfirmButton
+                            title="ลบ Role"
+                            description={`ยืนยันลบ role "${role.name}"${role._count.platformAdmins > 0 ? ` — admin ${role._count.platformAdmins} คนจะไม่มี role นี้อีกต่อไป (ไม่มีสิทธิ์จนกว่าจะกำหนด role ใหม่)` : ""}`}
+                            successMessage="ลบ role แล้ว"
+                            onConfirm={deletePlatformRole.bind(null, role.id)}
+                          />
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
+        )}
+      </Card>
+    </div>
+  );
+}

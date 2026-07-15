@@ -9,12 +9,18 @@ import { deleteStaff } from "./actions";
 import { StaffFilter } from "./staff-filter";
 import { StaffFormDialog } from "./staff-form-dialog";
 
+interface Role {
+  id: string;
+  name: string;
+}
+
 interface Staff {
   id: string;
   name: string;
   email: string;
   phone: string | null;
   role: "OWNER" | "STAFF";
+  roleId: string | null;
   isActive: boolean;
 }
 
@@ -31,7 +37,10 @@ export default async function StaffPage({ searchParams }: PageProps) {
   query.set("page", String(page));
   query.set("pageSize", "10");
 
-  const result = await requireApiFetch<PaginatedResult<Staff>>(`/staff?${query.toString()}`);
+  const [result, roles] = await Promise.all([
+    requireApiFetch<PaginatedResult<Staff>>(`/staff?${query.toString()}`),
+    requireApiFetch<Role[]>("/roles"),
+  ]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,7 +49,7 @@ export default async function StaffPage({ searchParams }: PageProps) {
           <h1 className="text-2xl font-semibold">พนักงาน</h1>
           <p className="text-muted">จัดการบัญชีพนักงานที่ใช้งาน POS หน้าร้าน</p>
         </div>
-        <StaffFormDialog />
+        <StaffFormDialog roles={roles} />
       </div>
 
       <Card>
@@ -88,7 +97,7 @@ export default async function StaffPage({ searchParams }: PageProps) {
                       </Table.Cell>
                       <Table.Cell>
                         <div className="flex items-center gap-2">
-                          <StaffFormDialog staff={member} />
+                          <StaffFormDialog roles={roles} staff={member} />
                           <DeleteConfirmButton
                             title="ลบพนักงาน"
                             description={`ยืนยันลบบัญชีพนักงาน "${member.name}" — จะไม่สามารถ login เข้าใช้งาน POS ได้อีก`}
