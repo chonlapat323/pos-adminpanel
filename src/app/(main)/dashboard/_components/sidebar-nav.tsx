@@ -23,7 +23,8 @@ export function SidebarNav() {
           <div key={group.id} className="flex flex-col gap-1">
             <p className="px-3 pb-1 font-medium text-muted text-xs uppercase tracking-wide">{group.label}</p>
             {group.items.map((item) => {
-              const isActive = pathname === item.url || pathname?.startsWith(`${item.url}/`);
+              const isActive =
+                pathname === item.url || (item.url !== "/dashboard" && pathname?.startsWith(`${item.url}/`));
               const Icon = item.icon;
               return (
                 <Link
