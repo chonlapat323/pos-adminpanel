@@ -19,13 +19,13 @@ export function proxy(req: NextRequest) {
 
   const platformToken = req.cookies.get(PLATFORM_AUTH_COOKIE)?.value;
   const isPlatformLoginRoute = pathname.startsWith("/platform/login");
-  const isPlatformShopsRoute = pathname.startsWith("/platform/shops");
+  const isPlatformProtectedRoute = pathname.startsWith("/platform/") && !isPlatformLoginRoute;
 
-  if (!platformToken && isPlatformShopsRoute) {
+  if (!platformToken && isPlatformProtectedRoute) {
     return NextResponse.redirect(new URL("/platform/login", req.url));
   }
   if (platformToken && isPlatformLoginRoute) {
-    return NextResponse.redirect(new URL("/platform/shops", req.url));
+    return NextResponse.redirect(new URL("/platform/dashboard", req.url));
   }
 
   return NextResponse.next();

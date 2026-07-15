@@ -13,7 +13,7 @@ export function PlatformSidebarNav() {
 
   return (
     <div className="flex h-full flex-col">
-      <Link href="/platform/shops" className="flex items-center gap-2 px-4 py-4 font-semibold text-lg">
+      <Link href="/platform/dashboard" className="flex items-center gap-2 px-4 py-4 font-semibold text-lg">
         <ShieldCheck className="size-5" />
         Platform Admin
       </Link>

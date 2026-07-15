@@ -27,7 +27,7 @@ export function LoginForm() {
       toast.danger(result.error);
       return;
     }
-    router.push("/platform/shops");
+    router.push("/platform/dashboard");
     router.refresh();
   }
 

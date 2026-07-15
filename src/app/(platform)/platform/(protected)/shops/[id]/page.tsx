@@ -26,14 +26,26 @@ function formatBaht(value: number) {
   return `฿${value.toLocaleString("th-TH")}`;
 }
 
+function StatCard({ label, value, href }: { label: string; value: string; href?: string }) {
+  const card = (
+    <Card className={href ? "transition-colors hover:bg-default" : undefined}>
+      <Card.Header>
+        <Card.Description>{label}</Card.Description>
+        <Card.Title className="text-2xl">{value}</Card.Title>
+      </Card.Header>
+    </Card>
+  );
+  return href ? <Link href={href}>{card}</Link> : card;
+}
+
 export default async function PlatformShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const shop = await requirePlatformApiFetch<ShopDetail>(`/platform/shops/${id}`);
 
-  const statCards = [
+  const statCards: { label: string; value: string; href?: string }[] = [
     { label: "รายได้เดือนนี้", value: formatBaht(shop.revenueThisMonth) },
-    { label: "สมาชิก", value: shop._count.members.toLocaleString("th-TH") },
-    { label: "พนักงาน", value: shop._count.staff.toLocaleString("th-TH") },
+    { label: "สมาชิก", value: shop._count.members.toLocaleString("th-TH"), href: `/platform/shops/${id}/members` },
+    { label: "พนักงาน", value: shop._count.staff.toLocaleString("th-TH"), href: `/platform/shops/${id}/staff` },
     { label: "บริการ", value: shop._count.services.toLocaleString("th-TH") },
   ];
 
@@ -60,12 +72,7 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <Card key={stat.label}>
-            <Card.Header>
-              <Card.Description>{stat.label}</Card.Description>
-              <Card.Title className="text-2xl">{stat.value}</Card.Title>
-            </Card.Header>
-          </Card>
+          <StatCard key={stat.label} label={stat.label} value={stat.value} href={stat.href} />
         ))}
       </div>
 
