@@ -2,8 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { ListBox, Select } from "@heroui/react";
-import { ChevronDown } from "lucide-react";
+import { ComboBox, Input, ListBox } from "@heroui/react";
 
 interface ShopOption {
   id: string;
@@ -25,12 +24,12 @@ export function ShopFilterSelect({ shops }: { shops: ShopOption[] }) {
   }
 
   return (
-    <Select selectedKey={current} onSelectionChange={handleChange} className="w-56">
-      <Select.Trigger>
-        <Select.Value />
-        <ChevronDown className="size-4" />
-      </Select.Trigger>
-      <Select.Popover>
+    <ComboBox selectedKey={current} onSelectionChange={handleChange} className="w-56">
+      <ComboBox.InputGroup>
+        <Input aria-label="กรองตามร้าน" placeholder="ค้นหาร้าน" />
+        <ComboBox.Trigger />
+      </ComboBox.InputGroup>
+      <ComboBox.Popover>
         <ListBox>
           <ListBox.Item id="__all__" textValue="ทุกร้าน">
             ทุกร้าน
@@ -41,7 +40,7 @@ export function ShopFilterSelect({ shops }: { shops: ShopOption[] }) {
             </ListBox.Item>
           ))}
         </ListBox>
-      </Select.Popover>
-    </Select>
+      </ComboBox.Popover>
+    </ComboBox>
   );
 }

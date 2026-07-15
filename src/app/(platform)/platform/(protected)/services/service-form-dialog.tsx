@@ -20,6 +20,7 @@ import { ChevronDown, Pencil, Plus } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { EntityComboBoxField } from "@/components/entity-combo-box-field";
 import { ShopSelectField } from "@/components/shop-select-field";
 
 import { createPlatformService, updatePlatformService } from "./actions";
@@ -154,31 +155,16 @@ export function ServiceFormDialog({ shops, categories, service }: ServiceFormDia
                   control={form.control}
                   name="categoryId"
                   render={({ field, fieldState }) => (
-                    <div className="flex flex-col gap-1.5">
-                      <Label>กลุ่มบริการ</Label>
-                      <Select
-                        selectedKey={field.value || null}
-                        onSelectionChange={(key) => field.onChange(String(key ?? ""))}
+                    <div className="flex flex-col gap-1">
+                      <EntityComboBoxField
+                        items={filteredCategories}
+                        value={field.value}
+                        onChange={field.onChange}
                         isInvalid={fieldState.invalid}
                         isDisabled={!shopId}
-                        fullWidth
-                      >
-                        <Select.Trigger>
-                          <Select.Value>
-                            {(node) => node.selectedText || (shopId ? "เลือกกลุ่มบริการ" : "เลือกร้านก่อน")}
-                          </Select.Value>
-                          <ChevronDown className="size-4" />
-                        </Select.Trigger>
-                        <Select.Popover>
-                          <ListBox>
-                            {filteredCategories.map((category) => (
-                              <ListBox.Item key={category.id} id={category.id} textValue={category.name}>
-                                {category.name}
-                              </ListBox.Item>
-                            ))}
-                          </ListBox>
-                        </Select.Popover>
-                      </Select>
+                        label="กลุ่มบริการ"
+                        placeholder={shopId ? "พิมพ์เพื่อค้นหากลุ่มบริการ" : "เลือกร้านก่อน"}
+                      />
                       {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
                     </div>
                   )}

@@ -1,7 +1,6 @@
 "use client";
 
-import { Label, ListBox, Select } from "@heroui/react";
-import { ChevronDown } from "lucide-react";
+import { EntityComboBoxField } from "./entity-combo-box-field";
 
 interface ShopOption {
   id: string;
@@ -18,28 +17,13 @@ interface ShopSelectFieldProps {
 
 export function ShopSelectField({ shops, value, onChange, isInvalid, label = "ร้าน" }: ShopSelectFieldProps) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      <Select
-        selectedKey={value || null}
-        onSelectionChange={(key) => onChange(String(key ?? ""))}
-        isInvalid={isInvalid}
-        fullWidth
-      >
-        <Select.Trigger>
-          <Select.Value>{(node) => node.selectedText || "เลือกร้าน"}</Select.Value>
-          <ChevronDown className="size-4" />
-        </Select.Trigger>
-        <Select.Popover>
-          <ListBox>
-            {shops.map((shop) => (
-              <ListBox.Item key={shop.id} id={shop.id} textValue={shop.name}>
-                {shop.name}
-              </ListBox.Item>
-            ))}
-          </ListBox>
-        </Select.Popover>
-      </Select>
-    </div>
+    <EntityComboBoxField
+      items={shops}
+      value={value}
+      onChange={onChange}
+      isInvalid={isInvalid}
+      label={label}
+      placeholder="พิมพ์เพื่อค้นหาร้าน"
+    />
   );
 }
