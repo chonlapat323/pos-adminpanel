@@ -6,6 +6,8 @@ import { ChevronDown } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ImageUploadField } from "@/components/image-upload-field";
+
 import { updateShopSettings } from "./actions";
 
 const SHOP_TYPE_LABELS: Record<string, string> = {
@@ -18,6 +20,7 @@ const SHOP_TYPE_LABELS: Record<string, string> = {
 const settingsSchema = z.object({
   name: z.string().min(1, "กรอกชื่อร้าน"),
   shopType: z.enum(["NAIL", "HAIR", "WAX", "MULTI"]),
+  logoUrl: z.string(),
   address: z.string().optional(),
   phone: z.string().optional(),
   openTime: z.string().optional(),
@@ -29,6 +32,7 @@ interface ShopSettingsFormProps {
   shop: {
     name: string;
     shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
+    logoUrl: string | null;
     address: string | null;
     phone: string | null;
     openTime: string | null;
@@ -43,6 +47,7 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
     defaultValues: {
       name: shop.name,
       shopType: shop.shopType,
+      logoUrl: shop.logoUrl ?? "",
       address: shop.address ?? "",
       phone: shop.phone ?? "",
       openTime: shop.openTime ?? "",
@@ -55,6 +60,7 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
     const result = await updateShopSettings({
       name: data.name,
       shopType: data.shopType,
+      logoUrl: data.logoUrl || undefined,
       address: data.address || undefined,
       phone: data.phone || undefined,
       openTime: data.openTime || undefined,
@@ -70,6 +76,11 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        control={form.control}
+        name="logoUrl"
+        render={({ field }) => <ImageUploadField label="โลโก้ร้าน" value={field.value} onChange={field.onChange} />}
+      />
       <div className="grid gap-4 sm:grid-cols-2">
         <Controller
           control={form.control}

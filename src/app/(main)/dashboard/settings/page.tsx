@@ -7,6 +7,7 @@ import { ShopSettingsForm } from "./shop-settings-form";
 interface Shop {
   name: string;
   slug: string;
+  logoUrl: string | null;
   address: string | null;
   phone: string | null;
   openTime: string | null;

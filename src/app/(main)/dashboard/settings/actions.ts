@@ -7,6 +7,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 export interface ShopSettingsInput {
   name: string;
   shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
+  logoUrl?: string;
   address?: string;
   phone?: string;
   openTime?: string;
