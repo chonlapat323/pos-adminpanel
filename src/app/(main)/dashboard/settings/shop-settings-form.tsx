@@ -26,6 +26,7 @@ const settingsSchema = z.object({
   openTime: z.string().optional(),
   closeTime: z.string().optional(),
   bahtPerPoint: z.coerce.number().int().min(1, "ต้องมากกว่า 0"),
+  signupBonusPoints: z.coerce.number().int().min(0, "ต้องไม่ติดลบ"),
 });
 
 interface ShopSettingsFormProps {
@@ -38,6 +39,7 @@ interface ShopSettingsFormProps {
     openTime: string | null;
     closeTime: string | null;
     bahtPerPoint: number;
+    signupBonusPoints: number;
   };
 }
 
@@ -53,6 +55,7 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
       openTime: shop.openTime ?? "",
       closeTime: shop.closeTime ?? "",
       bahtPerPoint: shop.bahtPerPoint,
+      signupBonusPoints: shop.signupBonusPoints,
     },
   });
 
@@ -66,6 +69,7 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
       openTime: data.openTime || undefined,
       closeTime: data.closeTime || undefined,
       bahtPerPoint: data.bahtPerPoint,
+      signupBonusPoints: data.signupBonusPoints,
     });
     if (!result.success) {
       toast.danger(result.error);
@@ -178,6 +182,24 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
             >
               <Label>อัตราสะสม point (บาทต่อ 1 point)</Label>
               <Input type="number" min={1} />
+              {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
+            </TextField>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="signupBonusPoints"
+          render={({ field, fieldState }) => (
+            <TextField
+              name={field.name}
+              value={field.value as unknown as string}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              isInvalid={fieldState.invalid}
+              fullWidth
+            >
+              <Label>คะแนนโบนัสสมัครสมาชิกใหม่</Label>
+              <Input type="number" min={0} />
               {fieldState.invalid && <ErrorMessage>{fieldState.error?.message}</ErrorMessage>}
             </TextField>
           )}

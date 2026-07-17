@@ -13,6 +13,7 @@ export interface ShopSettingsInput {
   openTime?: string;
   closeTime?: string;
   bahtPerPoint: number;
+  signupBonusPoints: number;
 }
 
 type ActionResult = { success: true } | { success: false; error: string };

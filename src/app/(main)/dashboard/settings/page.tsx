@@ -14,6 +14,7 @@ interface Shop {
   closeTime: string | null;
   shopType: "NAIL" | "HAIR" | "WAX" | "MULTI";
   bahtPerPoint: number;
+  signupBonusPoints: number;
 }
 
 export default async function SettingsPage() {
