@@ -1,5 +1,32 @@
 @import "@heroui/styles";
 
+/* Exact palette from the user's design mockup (design/Platform Dashboard.dc.html), not HeroUI's
+   stock blue-accented light theme - written as unlayered CSS (see mobile-app/globals.css for the
+   same technique) so it always wins over HeroUI's @layer base defaults regardless of
+   selector/order. This is a monochrome "brand" (near-black), not a colored accent - matches the
+   mockup's black logo/icons/bars, not a blue highlight. */
+:root {
+  --background: #fafafa;
+  --foreground: #18181b;
+
+  --surface: #ffffff;
+  --surface-foreground: #18181b;
+
+  --default: #f4f4f5;
+  --default-foreground: #18181b;
+
+  --muted: #71717a;
+
+  --accent: #18181b;
+  --accent-foreground: #ffffff;
+
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --border: #ececef;
+  --border-secondary: #e4e4e7;
+}
+
 html {
   overscroll-behavior: none;
 }
