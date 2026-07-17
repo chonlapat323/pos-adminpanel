@@ -1,10 +1,9 @@
 import { Card } from "@heroui/react";
 import { Cake, Coins, DollarSign, ImageIcon, TrendingDown, TrendingUp, Users } from "lucide-react";
 
+import { PeriodPills } from "@/components/period-pills";
 import { requireApiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
-
-import { DashboardPeriodFilter } from "./dashboard-period-filter";
 
 interface RevenueBucket {
   label: string;
@@ -126,7 +125,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <h1 className="text-2xl font-semibold">ภาพรวมร้าน</h1>
           <p className="text-muted">สรุปรายได้ บิล และสมาชิกของร้าน</p>
         </div>
-        <DashboardPeriodFilter />
+        <PeriodPills />
       </div>
 
       {/* KPI row */}
