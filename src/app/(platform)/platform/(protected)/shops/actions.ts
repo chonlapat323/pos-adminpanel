@@ -60,3 +60,17 @@ export async function updateShopStatus(shopId: string, isActive: boolean): Promi
     return { success: false, error: error instanceof ApiError ? error.message : "อัปเดตสถานะร้านไม่สำเร็จ" };
   }
 }
+
+export async function updateShopSlug(shopId: string, slug: string): Promise<ActionResult> {
+  try {
+    await platformApiFetch(`/platform/shops/${shopId}/slug`, {
+      method: "PATCH",
+      body: JSON.stringify({ slug }),
+    });
+    revalidatePath("/platform/shops");
+    revalidatePath(`/platform/shops/${shopId}`);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof ApiError ? error.message : "แก้ไข slug ไม่สำเร็จ" };
+  }
+}

@@ -7,6 +7,7 @@ import { requirePlatformApiFetch } from "@/lib/platform-api";
 
 import { ShopStatusToggle } from "../shop-status-toggle";
 import { ShopEditDialog } from "./shop-edit-dialog";
+import { ShopSlugEditor } from "./shop-slug-editor";
 
 interface ShopDetail {
   id: string;
@@ -59,7 +60,10 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">{shop.name}</h1>
-          <p className="text-muted">slug: {shop.slug}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-muted">slug: {shop.slug}</p>
+            <ShopSlugEditor shopId={shop.id} slug={shop.slug} />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Chip color={shop.isActive ? "success" : "danger"} variant="soft">
