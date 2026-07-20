@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { requirePlatformApiFetch } from "@/lib/platform-api";
 
 import { ShopStatusToggle } from "../shop-status-toggle";
+import { CancelLatestSubscriptionButton } from "./cancel-latest-subscription-button";
 import { ShopEditDialog } from "./shop-edit-dialog";
 import { ShopSlugEditor } from "./shop-slug-editor";
 import { ShopSubscriptionGrantDialog } from "./shop-subscription-grant-dialog";
@@ -33,7 +34,7 @@ interface SubscriptionPackage {
 
 interface SubscriptionHistoryEntry {
   id: string;
-  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED";
+  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED" | "CANCELLED";
   startAt: string;
   endAt: string;
   package: SubscriptionPackage;
@@ -123,6 +124,7 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
           </Chip>
           <ShopEditDialog shop={shop} />
           <ShopSubscriptionGrantDialog shopId={shop.id} packages={subscription.purchasablePackages} />
+          <CancelLatestSubscriptionButton shopId={shop.id} />
           <ShopStatusToggle shopId={shop.id} isActive={shop.isActive} />
         </div>
       </div>
@@ -205,9 +207,19 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
                   <Table.Body>
                     {subscription.history.map((entry) => {
                       const payment = entry.payments[0];
+                      const isCancelled = entry.status === "CANCELLED";
                       return (
                         <Table.Row key={entry.id} id={entry.id}>
-                          <Table.Cell>{entry.package.name}</Table.Cell>
+                          <Table.Cell>
+                            <span className={isCancelled ? "text-muted line-through" : undefined}>
+                              {entry.package.name}
+                            </span>
+                            {isCancelled && (
+                              <Chip color="danger" variant="soft" className="ml-2">
+                                <Chip.Label>ยกเลิกแล้ว</Chip.Label>
+                              </Chip>
+                            )}
+                          </Table.Cell>
                           <Table.Cell>
                             {new Date(entry.startAt).toLocaleDateString("th-TH")} -{" "}
                             {new Date(entry.endAt).toLocaleDateString("th-TH")}

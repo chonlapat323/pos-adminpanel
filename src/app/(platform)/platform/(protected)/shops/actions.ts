@@ -88,3 +88,15 @@ export async function grantShopSubscription(shopId: string, packageId: string): 
     return { success: false, error: error instanceof ApiError ? error.message : "ให้/ต่ออายุแพ็กเกจไม่สำเร็จ" };
   }
 }
+
+export async function cancelLatestShopSubscription(shopId: string): Promise<ActionResult> {
+  try {
+    await platformApiFetch(`/platform/shops/${shopId}/subscription/cancel`, { method: "POST" });
+    revalidatePath("/platform/shops");
+    revalidatePath(`/platform/shops/${shopId}`);
+    revalidatePath("/platform/subscriptions");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof ApiError ? error.message : "ยกเลิกรายการล่าสุดไม่สำเร็จ" };
+  }
+}

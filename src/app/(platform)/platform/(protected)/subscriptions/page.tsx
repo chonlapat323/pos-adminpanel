@@ -13,6 +13,7 @@ interface SubscriptionEvent {
   createdAt: string;
   startAt: string;
   endAt: string;
+  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED" | "CANCELLED";
   eventType: "TRIAL_STARTED" | "PURCHASED" | "ADMIN_GRANTED";
   shop: { id: string; name: string; slug: string };
   package: { name: string };

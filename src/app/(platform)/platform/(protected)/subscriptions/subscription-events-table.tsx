@@ -9,6 +9,7 @@ interface SubscriptionEvent {
   createdAt: string;
   startAt: string;
   endAt: string;
+  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED" | "CANCELLED";
   eventType: "TRIAL_STARTED" | "PURCHASED" | "ADMIN_GRANTED";
   shop: { id: string; name: string; slug: string };
   package: { name: string };
@@ -67,9 +68,16 @@ export function SubscriptionEventsTable({ events }: { events: SubscriptionEvent[
                   </Table.Cell>
                   <Table.Cell>{event.shop.name}</Table.Cell>
                   <Table.Cell>
-                    <Chip color={EVENT_COLORS[event.eventType]} variant="soft">
-                      <Chip.Label>{EVENT_LABELS[event.eventType]}</Chip.Label>
-                    </Chip>
+                    <div className="flex items-center gap-2">
+                      <Chip color={EVENT_COLORS[event.eventType]} variant="soft">
+                        <Chip.Label>{EVENT_LABELS[event.eventType]}</Chip.Label>
+                      </Chip>
+                      {event.status === "CANCELLED" && (
+                        <Chip color="danger" variant="soft">
+                          <Chip.Label>ยกเลิกแล้ว</Chip.Label>
+                        </Chip>
+                      )}
+                    </div>
                   </Table.Cell>
                   <Table.Cell>{event.package.name}</Table.Cell>
                   <Table.Cell>

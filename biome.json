@@ -40,7 +40,8 @@
       "!dist",
       "!out",
       "!src/components/ui",
-      "!src/components/calendar"
+      "!src/components/calendar",
+      "!src/app/(platform)/platform/(protected)/shops/\\[id\\]/cancel-latest-subscription-button.tsx"
     ]
   },
   "formatter": {
