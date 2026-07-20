@@ -20,7 +20,13 @@ interface SubscriptionEvent {
 }
 
 interface PageProps {
-  searchParams: Promise<{ search?: string; page?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    eventType?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    page?: string;
+  }>;
 }
 
 export default async function PlatformSubscriptionEventsPage({ searchParams }: PageProps) {
@@ -29,6 +35,9 @@ export default async function PlatformSubscriptionEventsPage({ searchParams }: P
 
   const query = new URLSearchParams();
   if (params.search) query.set("search", params.search);
+  if (params.eventType) query.set("eventType", params.eventType);
+  if (params.dateFrom) query.set("dateFrom", params.dateFrom);
+  if (params.dateTo) query.set("dateTo", params.dateTo);
   query.set("page", String(page));
   query.set("pageSize", "20");
 
@@ -54,7 +63,11 @@ export default async function PlatformSubscriptionEventsPage({ searchParams }: P
               <div className="flex size-8 items-center justify-center rounded-lg bg-default">
                 <Receipt className="size-4" />
               </div>
-              <p className="font-medium text-sm">{params.search ? "ไม่พบร้านที่ค้นหา" : "ยังไม่มีเหตุการณ์"}</p>
+              <p className="font-medium text-sm">
+                {params.search || params.eventType || params.dateFrom || params.dateTo
+                  ? "ไม่พบเหตุการณ์ที่ตรงกับตัวกรอง"
+                  : "ยังไม่มีเหตุการณ์"}
+              </p>
             </div>
           </EmptyState>
         ) : (
