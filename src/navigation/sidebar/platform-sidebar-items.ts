@@ -1,4 +1,4 @@
-import { Building2, Gift, LayoutDashboard, Scissors, ShieldCheck, Tag, UserCog, Users } from "lucide-react";
+import { Building2, Gift, LayoutDashboard, Receipt, Scissors, ShieldCheck, Tag, UserCog, Users } from "lucide-react";
 
 import type { NavGroup } from "./sidebar-items";
 
@@ -9,6 +9,7 @@ export const platformSidebarItems: NavGroup[] = [
     items: [
       { id: "dashboard", title: "ภาพรวม", url: "/platform/dashboard", icon: LayoutDashboard },
       { id: "shops", title: "ร้านทั้งหมด", url: "/platform/shops", icon: Building2 },
+      { id: "subscriptions", title: "ประวัติ Subscription", url: "/platform/subscriptions", icon: Receipt },
     ],
   },
   {
