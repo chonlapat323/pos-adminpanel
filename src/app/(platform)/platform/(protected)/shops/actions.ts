@@ -74,3 +74,17 @@ export async function updateShopSlug(shopId: string, slug: string): Promise<Acti
     return { success: false, error: error instanceof ApiError ? error.message : "แก้ไข slug ไม่สำเร็จ" };
   }
 }
+
+export async function grantShopSubscription(shopId: string, packageId: string): Promise<ActionResult> {
+  try {
+    await platformApiFetch(`/platform/shops/${shopId}/subscription`, {
+      method: "PATCH",
+      body: JSON.stringify({ packageId }),
+    });
+    revalidatePath("/platform/shops");
+    revalidatePath(`/platform/shops/${shopId}`);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof ApiError ? error.message : "ให้/ต่ออายุแพ็กเกจไม่สำเร็จ" };
+  }
+}

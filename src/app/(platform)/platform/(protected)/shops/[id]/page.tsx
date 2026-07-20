@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Card, Chip } from "@heroui/react";
+import { Card, Chip, Table } from "@heroui/react";
 import { ArrowLeft } from "lucide-react";
 
 import { requirePlatformApiFetch } from "@/lib/platform-api";
@@ -8,6 +8,7 @@ import { requirePlatformApiFetch } from "@/lib/platform-api";
 import { ShopStatusToggle } from "../shop-status-toggle";
 import { ShopEditDialog } from "./shop-edit-dialog";
 import { ShopSlugEditor } from "./shop-slug-editor";
+import { ShopSubscriptionGrantDialog } from "./shop-subscription-grant-dialog";
 
 interface ShopDetail {
   id: string;
@@ -22,6 +23,54 @@ interface ShopDetail {
   revenueThisMonth: number;
   _count: { members: number; staff: number; services: number };
 }
+
+interface SubscriptionPackage {
+  id: string;
+  code: "TRIAL_60" | "SIX_MONTH" | "ONE_YEAR";
+  name: string;
+  priceThb: number;
+}
+
+interface SubscriptionHistoryEntry {
+  id: string;
+  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED";
+  startAt: string;
+  endAt: string;
+  package: SubscriptionPackage;
+  payments: { id: string; amountThb: number; status: "PENDING" | "PAID" | "FAILED"; paidAt: string | null }[];
+}
+
+interface ShopSubscriptionDetail {
+  subscriptionStatus: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED";
+  subscriptionEndsAt: string | null;
+  isActive: boolean;
+  currentPackage: SubscriptionPackage | null;
+  history: SubscriptionHistoryEntry[];
+  purchasablePackages: SubscriptionPackage[];
+}
+
+const SUBSCRIPTION_STATUS_LABELS: Record<ShopSubscriptionDetail["subscriptionStatus"], string> = {
+  PENDING: "รอชำระเงิน",
+  TRIALING: "ทดลองใช้ฟรี",
+  ACTIVE: "ใช้งานอยู่",
+  EXPIRED: "หมดอายุแล้ว",
+};
+
+const SUBSCRIPTION_STATUS_COLORS: Record<
+  ShopSubscriptionDetail["subscriptionStatus"],
+  "success" | "warning" | "danger"
+> = {
+  PENDING: "warning",
+  TRIALING: "warning",
+  ACTIVE: "success",
+  EXPIRED: "danger",
+};
+
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  PENDING: "รอชำระเงิน",
+  PAID: "ชำระแล้ว",
+  FAILED: "ไม่สำเร็จ",
+};
 
 function formatBaht(value: number) {
   return `฿${value.toLocaleString("th-TH")}`;
@@ -41,7 +90,10 @@ function StatCard({ label, value, href }: { label: string; value: string; href?:
 
 export default async function PlatformShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const shop = await requirePlatformApiFetch<ShopDetail>(`/platform/shops/${id}`);
+  const [shop, subscription] = await Promise.all([
+    requirePlatformApiFetch<ShopDetail>(`/platform/shops/${id}`),
+    requirePlatformApiFetch<ShopSubscriptionDetail>(`/platform/shops/${id}/subscription`),
+  ]);
 
   const statCards: { label: string; value: string; href?: string }[] = [
     { label: "รายได้เดือนนี้", value: formatBaht(shop.revenueThisMonth) },
@@ -70,6 +122,7 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
             <Chip.Label>{shop.isActive ? "ใช้งานอยู่" : "ถูกระงับ"}</Chip.Label>
           </Chip>
           <ShopEditDialog shop={shop} />
+          <ShopSubscriptionGrantDialog shopId={shop.id} packages={subscription.purchasablePackages} />
           <ShopStatusToggle shopId={shop.id} isActive={shop.isActive} />
         </div>
       </div>
@@ -105,6 +158,74 @@ export default async function PlatformShopDetailPage({ params }: { params: Promi
             <span className="text-muted text-xs">สมัครเมื่อ</span>
             <span className="font-medium text-sm">{new Date(shop.createdAt).toLocaleDateString("th-TH")}</span>
           </div>
+        </Card.Content>
+      </Card>
+
+      <Card>
+        <Card.Header>
+          <Card.Title>Subscription</Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-muted text-xs">แพ็กเกจปัจจุบัน</span>
+              <span className="font-medium text-sm">{subscription.currentPackage?.name ?? "ยังไม่มีแพ็กเกจ"}</span>
+            </div>
+            <Chip color={SUBSCRIPTION_STATUS_COLORS[subscription.subscriptionStatus]} variant="soft">
+              <Chip.Label>{SUBSCRIPTION_STATUS_LABELS[subscription.subscriptionStatus]}</Chip.Label>
+            </Chip>
+          </div>
+          {subscription.subscriptionEndsAt && (
+            <div className="flex flex-col gap-1">
+              <span className="text-muted text-xs">
+                {subscription.subscriptionStatus === "EXPIRED" ? "หมดอายุเมื่อ" : "ใช้งานได้ถึง"}
+              </span>
+              <span className="font-medium text-sm">
+                {new Date(subscription.subscriptionEndsAt).toLocaleDateString("th-TH", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+          )}
+
+          {subscription.history.length === 0 ? (
+            <p className="text-muted text-sm">ยังไม่มีประวัติการชำระเงิน</p>
+          ) : (
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content aria-label="ประวัติการชำระเงิน">
+                  <Table.Header>
+                    <Table.Column isRowHeader>แพ็กเกจ</Table.Column>
+                    <Table.Column>ช่วงเวลา</Table.Column>
+                    <Table.Column>สถานะ</Table.Column>
+                    <Table.Column className="text-right">ยอดชำระ</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {subscription.history.map((entry) => {
+                      const payment = entry.payments[0];
+                      return (
+                        <Table.Row key={entry.id} id={entry.id}>
+                          <Table.Cell>{entry.package.name}</Table.Cell>
+                          <Table.Cell>
+                            {new Date(entry.startAt).toLocaleDateString("th-TH")} -{" "}
+                            {new Date(entry.endAt).toLocaleDateString("th-TH")}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {payment ? (PAYMENT_STATUS_LABELS[payment.status] ?? payment.status) : "-"}
+                          </Table.Cell>
+                          <Table.Cell className="text-right">
+                            {payment ? `฿${payment.amountThb.toLocaleString("th-TH")}` : "-"}
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
+          )}
         </Card.Content>
       </Card>
     </div>
