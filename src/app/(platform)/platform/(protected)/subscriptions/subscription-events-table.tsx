@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 
 import { Chip, Table } from "@heroui/react";
 
+import { SUBSCRIPTION_EVENT_COLORS, SUBSCRIPTION_EVENT_LABELS } from "@/lib/subscription-status";
+
 interface SubscriptionEvent {
   id: string;
   createdAt: string;
@@ -15,18 +17,6 @@ interface SubscriptionEvent {
   package: { name: string };
   payments: { amountThb: number; status: "PENDING" | "PAID" | "FAILED" }[];
 }
-
-const EVENT_LABELS: Record<SubscriptionEvent["eventType"], string> = {
-  TRIAL_STARTED: "เริ่มทดลองใช้ฟรี",
-  PURCHASED: "ซื้อแพ็กเกจ (Omise)",
-  ADMIN_GRANTED: "แอดมินให้/ต่ออายุ",
-};
-
-const EVENT_COLORS: Record<SubscriptionEvent["eventType"], "warning" | "success" | "accent"> = {
-  TRIAL_STARTED: "warning",
-  PURCHASED: "success",
-  ADMIN_GRANTED: "accent",
-};
 
 const PAYMENT_STATUS_LABELS: Record<string, string> = {
   PENDING: "รอชำระเงิน",
@@ -69,8 +59,8 @@ export function SubscriptionEventsTable({ events }: { events: SubscriptionEvent[
                   <Table.Cell>{event.shop.name}</Table.Cell>
                   <Table.Cell>
                     <div className="flex items-center gap-2">
-                      <Chip color={EVENT_COLORS[event.eventType]} variant="soft">
-                        <Chip.Label>{EVENT_LABELS[event.eventType]}</Chip.Label>
+                      <Chip color={SUBSCRIPTION_EVENT_COLORS[event.eventType]} variant="soft">
+                        <Chip.Label>{SUBSCRIPTION_EVENT_LABELS[event.eventType]}</Chip.Label>
                       </Chip>
                       {event.status === "CANCELLED" && (
                         <Chip color="danger" variant="soft">

@@ -9,12 +9,23 @@ import { ShopFilter } from "./shop-filter";
 import { ShopToolbar } from "./shop-toolbar";
 import { ShopsTable } from "./shops-table";
 
+interface LatestSubscriptionEvent {
+  id: string;
+  createdAt: string;
+  status: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED" | "CANCELLED";
+  eventType: "TRIAL_STARTED" | "PURCHASED" | "ADMIN_GRANTED";
+  package: { name: string };
+}
+
 interface Shop {
   id: string;
   name: string;
   slug: string;
   shopType: string;
   isActive: boolean;
+  subscriptionStatus: "PENDING" | "TRIALING" | "ACTIVE" | "EXPIRED";
+  subscriptionEndsAt: string | null;
+  latestSubscriptionEvent: LatestSubscriptionEvent | null;
   _count: { members: number; staff: number };
 }
 

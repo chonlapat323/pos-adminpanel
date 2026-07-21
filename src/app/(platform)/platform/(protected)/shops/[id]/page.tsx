@@ -4,6 +4,7 @@ import { Card, Chip, Table } from "@heroui/react";
 import { ArrowLeft } from "lucide-react";
 
 import { requirePlatformApiFetch } from "@/lib/platform-api";
+import { SUBSCRIPTION_STATUS_COLORS, SUBSCRIPTION_STATUS_LABELS } from "@/lib/subscription-status";
 
 import { ShopStatusToggle } from "../shop-status-toggle";
 import { CancelLatestSubscriptionButton } from "./cancel-latest-subscription-button";
@@ -49,23 +50,6 @@ interface ShopSubscriptionDetail {
   history: SubscriptionHistoryEntry[];
   purchasablePackages: SubscriptionPackage[];
 }
-
-const SUBSCRIPTION_STATUS_LABELS: Record<ShopSubscriptionDetail["subscriptionStatus"], string> = {
-  PENDING: "รอชำระเงิน",
-  TRIALING: "ทดลองใช้ฟรี",
-  ACTIVE: "ใช้งานอยู่",
-  EXPIRED: "หมดอายุแล้ว",
-};
-
-const SUBSCRIPTION_STATUS_COLORS: Record<
-  ShopSubscriptionDetail["subscriptionStatus"],
-  "success" | "warning" | "danger"
-> = {
-  PENDING: "warning",
-  TRIALING: "warning",
-  ACTIVE: "success",
-  EXPIRED: "danger",
-};
 
 const PAYMENT_STATUS_LABELS: Record<string, string> = {
   PENDING: "รอชำระเงิน",
