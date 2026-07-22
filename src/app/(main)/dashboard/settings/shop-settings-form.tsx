@@ -152,9 +152,9 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
           control={form.control}
           name="openTime"
           render={({ field }) => (
-            <TextField name={field.name} value={field.value} onChange={field.onChange} fullWidth>
+            <TextField name={field.name} fullWidth>
               <Label>เวลาเปิด</Label>
-              <Input type="time" />
+              <Input type="time" value={field.value} onChange={(e) => field.onChange(e.target.value)} />
             </TextField>
           )}
         />
@@ -162,9 +162,9 @@ export function ShopSettingsForm({ shop }: ShopSettingsFormProps) {
           control={form.control}
           name="closeTime"
           render={({ field }) => (
-            <TextField name={field.name} value={field.value} onChange={field.onChange} fullWidth>
+            <TextField name={field.name} fullWidth>
               <Label>เวลาปิด</Label>
-              <Input type="time" />
+              <Input type="time" value={field.value} onChange={(e) => field.onChange(e.target.value)} />
             </TextField>
           )}
         />
