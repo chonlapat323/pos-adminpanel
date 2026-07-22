@@ -15,7 +15,7 @@ npm install
 ## 2. เช็คไฟล์ `.env.production`
 ไฟล์นี้อยู่ใน repo แล้ว ไม่ต้องสร้างเอง — แต่เช็คว่า URL ตรงกับที่ backend deploy จริง:
 ```
-NEXT_PUBLIC_API_URL="https://pos-api.beautyup-enterprise.com"
+NEXT_PUBLIC_API_URL="https://api-pos.beautyup-enterprise.com"
 ```
 **สำคัญ**: ค่านี้ถูกฝังเข้าไปในไฟล์ตอน build เลย (ไม่ใช่ตอนรัน) ถ้าจะเปลี่ยน URL ทีหลังต้องแก้ไฟล์นี้แล้ว `npm run build` ใหม่เสมอ แก้แค่ `ecosystem.config.js` ไม่มีผลอะไรกับค่านี้
 
@@ -34,14 +34,14 @@ pm2 save
 ## 5. ต่อ reverse proxy (Caddy)
 เพิ่มใน Caddyfile:
 ```
-pos-admin.beautyup-enterprise.com {
+admin-pos.beautyup-enterprise.com {
     reverse_proxy localhost:3011
 }
 ```
 แล้ว reload Caddy
 
 ## 6. Login ครั้งแรก
-เข้า `https://pos-admin.beautyup-enterprise.com` แล้ว login ด้วยบัญชีที่ backend seed ไว้ให้:
+เข้า `https://admin-pos.beautyup-enterprise.com` แล้ว login ด้วยบัญชีที่ backend seed ไว้ให้:
 - email: `platform@possystem.local`
 - password: `platform1234`
 
