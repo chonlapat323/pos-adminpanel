@@ -1,4 +1,15 @@
-import { Building2, Gift, LayoutDashboard, Receipt, Scissors, ShieldCheck, Tag, UserCog, Users } from "lucide-react";
+import {
+  Building2,
+  Gift,
+  LayoutDashboard,
+  Receipt,
+  Scissors,
+  Settings,
+  ShieldCheck,
+  Tag,
+  UserCog,
+  Users,
+} from "lucide-react";
 
 import type { NavGroup } from "./sidebar-items";
 
@@ -29,6 +40,7 @@ export const platformSidebarItems: NavGroup[] = [
     items: [
       { id: "admins", title: "Platform Admin", url: "/platform/admins", icon: UserCog },
       { id: "roles", title: "สิทธิ์การใช้งาน (Role)", url: "/platform/roles", icon: ShieldCheck },
+      { id: "settings", title: "ตั้งค่าระบบ", url: "/platform/settings", icon: Settings },
     ],
   },
 ];
